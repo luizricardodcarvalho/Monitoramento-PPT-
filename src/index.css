@@ -1,0 +1,240 @@
+@import "tailwindcss";
+
+/* Custom scrollbar class for the horizontal buttons scrolling */
+.scrollbar-custom::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+.scrollbar-custom::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 9999px;
+}
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background: #00843D;
+  border-radius: 9999px;
+}
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background: #5adc6a;
+}
+
+/* ==========================================================================
+   PREMIUM SYSTEM-WIDE DARK MODE OVERRIDES
+   ========================================================================== */
+
+/* Automatically handle standard dark color schemes and scrollbars */
+.dark {
+  color-scheme: dark;
+}
+
+/* Full system-wide body & container background overrides */
+.dark,
+.dark body,
+.dark main,
+.dark .bg-\[\#F3F4F6\] {
+  background-color: #0d1117 !important; /* deep cosmic dark slate */
+  color: #f0f6fc !important;
+}
+
+/* Override the content area explicitly */
+.dark .flex-1.p-4.md\:p-8 {
+  background-color: #0d1117 !important;
+}
+
+/* White containers / cards / panels / section widgets */
+.dark .bg-white {
+  background-color: #161b22 !important; /* premium dark gray card background */
+  border-color: #30363d !important;
+  color: #f0f6fc !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Specific text color mapping to prevent dark text on dark backgrounds */
+.dark .text-gray-900, .dark.text-gray-900,
+.dark .text-gray-800, .dark.text-gray-800,
+.dark .text-gray-950, .dark.text-gray-950,
+.dark .text-slate-900, .dark.text-slate-900,
+.dark .text-slate-800, .dark.text-slate-800,
+.dark .text-slate-950, .dark.text-slate-950,
+.dark .text-zinc-900, .dark.text-zinc-900,
+.dark .text-zinc-800, .dark.text-zinc-800,
+.dark .text-zinc-950, .dark.text-zinc-950,
+.dark .text-neutral-900, .dark.text-neutral-900,
+.dark .text-neutral-800, .dark.text-neutral-800,
+.dark .text-neutral-950, .dark.text-neutral-950,
+.dark .text-black, .dark.text-black,
+.dark .text-\[\#1F2937\], .dark.text-\[\#1F2937\],
+.dark .text-\[\#000000\], .dark.text-\[\#000000\],
+.dark .text-\[\#1e1e24\], .dark.text-\[\#1e1e24\],
+.dark .text-\[\#0C2340\], .dark.text-\[\#0C2340\],
+.dark .text-\[\#0c2340\], .dark.text-\[\#0c2340\],
+.dark .text-\[\#0B1B3D\], .dark.text-\[\#0B1B3D\],
+.dark .text-\[\#0b1b3d\], .dark.text-\[\#0b1b3d\],
+.dark .text-\[\#054425\], .dark.text-\[\#054425\],
+.dark .text-\[\#004d22\], .dark.text-\[\#004d22\],
+.dark .text-\[\#002855\], .dark.text-\[\#002855\],
+.dark .text-\[\#00205B\], .dark.text-\[\#00205B\],
+.dark .text-\[\#111827\], .dark.text-\[\#111827\],
+.dark .text-\[\#1F2937\], .dark.text-\[\#1F2937\],
+.dark .text-\[\#1f2937\], .dark.text-\[\#1f2937\],
+.dark .text-emerald-800, .dark.text-emerald-800,
+.dark .text-emerald-900, .dark.text-emerald-900,
+.dark .text-emerald-950, .dark.text-emerald-950,
+.dark .text-green-900, .dark.text-green-900,
+.dark .text-green-950, .dark.text-green-950,
+.dark .text-gray-700, .dark.text-gray-700,
+.dark .text-gray-600, .dark.text-gray-600,
+.dark .text-slate-700, .dark.text-slate-700,
+.dark .text-slate-600, .dark.text-slate-600,
+.dark .text-zinc-700, .dark.text-zinc-700,
+.dark .text-zinc-600, .dark.text-zinc-600,
+.dark .text-neutral-700, .dark.text-neutral-700,
+.dark .text-neutral-600, .dark.text-neutral-600 {
+  color: #ffffff !important;
+}
+
+.dark .text-gray-500, .dark.text-gray-500,
+.dark .text-gray-400, .dark.text-gray-400,
+.dark .text-slate-500, .dark.text-slate-500,
+.dark .text-slate-400, .dark.text-slate-400,
+.dark .text-zinc-500, .dark.text-zinc-500,
+.dark .text-zinc-400, .dark.text-zinc-400,
+.dark .text-neutral-500, .dark.text-neutral-500,
+.dark .text-neutral-400, .dark.text-neutral-400,
+.dark .text-\[\#4B5563\], .dark.text-\[\#4B5563\] {
+  color: #c9d1d9 !important;
+}
+
+/* Recharts Charts global dark mode overrides */
+.dark .recharts-cartesian-axis-tick text,
+.dark .recharts-text,
+.dark .recharts-label,
+.dark .recharts-legend-item-text,
+.dark .recharts-default-legend,
+.dark .recharts-default-tooltip,
+.dark .recharts-legend-item-text span {
+  fill: #ffffff !important;
+  color: #ffffff !important;
+}
+
+.dark .recharts-cartesian-grid line {
+  stroke: #30363d !important;
+}
+
+.dark .recharts-cartesian-axis-line {
+  stroke: #30363d !important;
+}
+
+.dark .recharts-cartesian-axis-tick-line {
+  stroke: #30363d !important;
+}
+
+/* Borders, lines, and dividing rules */
+.dark .border-gray-50,
+.dark .border-gray-100,
+.dark .border-gray-150,
+.dark .border-gray-200,
+.dark .border-gray-300,
+.dark .border-slate-100 {
+  border-color: #30363d !important;
+}
+
+/* Table cells background and structure */
+.dark td, 
+.dark th {
+  border-color: #30363d !important;
+}
+
+.dark td {
+  color: #c9d1d9 !important;
+}
+
+.dark th {
+  color: #8b949e !important;
+}
+
+/* Table rows hover effect */
+.dark tr.hover\:bg-gray-50\/50:hover,
+.dark tr.hover\:bg-gray-50:hover,
+.dark .hover\:bg-gray-50\/50:hover,
+.dark .hover\:bg-gray-50:hover {
+  background-color: #21262d !important;
+}
+
+/* Buttons, pill buttons, select tags, and input fields */
+.dark .bg-gray-50,
+.dark .bg-slate-50 {
+  background-color: #0d1117 !important;
+  border-color: #30363d !important;
+  color: #f0f6fc !important;
+}
+
+.dark input, 
+.dark select, 
+.dark textarea {
+  background-color: #0d1117 !important;
+  border-color: #30363d !important;
+  color: #f0f6fc !important;
+}
+
+/* Keep primary brand green elements vibrant and recognizable */
+.dark .bg-\[\#00843D\], 
+.dark .bg-\[\#006B32\],
+.dark .bg-emerald-700 {
+  background-color: #00843d !important;
+  color: #ffffff !important;
+}
+
+/* Glowy green for headings and accents in dark mode */
+.dark .text-\[\#006B32\],
+.dark .text-\[\#00843D\] {
+  color: #5adc6a !important; 
+}
+
+/* Coazito Chat container styling */
+.dark .coazito-chat-container,
+.dark .coazito-chat-bg {
+  background-color: #161b22 !important;
+  border-color: #30363d !important;
+}
+
+/* Custom scrollbars inside dark panels */
+.dark .scrollbar-custom::-webkit-scrollbar-track {
+  background: #161b22;
+}
+
+.dark .scrollbar-custom::-webkit-scrollbar-thumb {
+  background: #30363d;
+}
+
+.dark .scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background: #5adc6a;
+}
+
+/* ==========================================================================
+   CODE & DATA PROTECTION FOR PUBLIC PREVIEWS
+   ========================================================================== */
+
+/* Prevent select of standard text and dragging of images to protect the interface from casual inspection */
+body {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+img, svg {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+}
+
+/* Ensure form fields and interactive elements remain fully editable and selectable */
+input, textarea, select, [contenteditable="true"], .coazito-chat-container, code, pre {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+}
+

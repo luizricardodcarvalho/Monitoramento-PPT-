@@ -1,0 +1,8 @@
+{
+  "name": "PPT",
+  "description": "Painel Inteligente de Gestão Operacional Agrícola e Logística Industrial para a Usina Colombo, agora com integração Supabase para persistência de dados.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
