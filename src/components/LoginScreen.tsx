@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Lock, User, Eye, EyeOff, ShieldAlert, Tractor, Sprout, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Lock, User, Eye, EyeOff, ShieldAlert, Tractor, Sprout, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ColomboLogo } from './Logos';
 
@@ -43,12 +43,6 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
         setError('Usuário ou senha inválidos. Utilize as credenciais corretas.');
       }
     }, 1500);
-  };
-
-  const fillDefaultCredentials = () => {
-    setUsername('Eder');
-    setPassword('Eder2026');
-    setError(null);
   };
 
   return (
@@ -140,12 +134,12 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-white/25 to-transparent" />
           
           <div className="flex flex-col items-center mb-10">
-            {/* Elegant Brand Logo Container (Enlarged by 15%) */}
+            {/* Elegant Brand Logo Container (Enlarged for perfect visual hierarchy) */}
             <motion.div 
               initial={{ scale: 0.85, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.15, duration: 0.6, type: "spring" }}
-              className="w-48 h-36 bg-white/5 rounded-[36px] p-5 flex items-center justify-center mb-7 border border-white/15 shadow-inner hover:border-[#5adc6a]/30 hover:bg-white/[0.07] transition-all duration-300"
+              className="w-52 h-40 bg-white/5 rounded-[36px] p-5 flex items-center justify-center mb-7 border border-white/15 shadow-inner hover:border-[#5adc6a]/30 hover:bg-white/[0.07] transition-all duration-300"
             >
               <ColomboLogo className="w-full h-full text-white filter drop-shadow-[0_4px_12px_rgba(255,255,255,0.06)]" />
             </motion.div>
@@ -258,20 +252,6 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
                   )}
                 </motion.button>
 
-                {/* Demo credentials helper (Professional layout) */}
-                <div className="pt-8 border-t border-white/5 flex flex-col items-center">
-                  <p className="text-xs font-black text-white/85 uppercase tracking-widest mb-4">
-                    Centro de Operações Agrícola
-                  </p>
-                  <button
-                    type="button"
-                    onClick={fillDefaultCredentials}
-                    className="px-6 py-3.5 bg-white/[0.02] hover:bg-white/[0.08] border border-white/5 hover:border-[#5adc6a]/20 rounded-2xl text-xs font-black text-white/90 uppercase tracking-wider flex items-center gap-2.5 transition-all cursor-pointer shadow-sm"
-                  >
-                    <CheckCircle2 size={16} className="text-[#5adc6a]" />
-                    Preencher Credenciais Padrão
-                  </button>
-                </div>
               </motion.form>
             ) : (
               <motion.div 
@@ -304,10 +284,10 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
           </AnimatePresence>
         </div>
 
-        {/* Footer info under card - Enhanced contrast and size for Full HD screens */}
-        <div className="text-center mt-10 text-[13px] font-bold text-white/85 uppercase tracking-[0.25em] space-y-2">
+        {/* Footer info under card - Enhanced contrast and size for Full HD/4K screens */}
+        <div className="text-center mt-10 text-[14px] sm:text-[15px] font-bold text-white/90 uppercase tracking-[0.25em] space-y-2">
           <p className="font-extrabold text-white">© {new Date().getFullYear()} Colombo Agroindústria S/A</p>
-          <p className="text-xs text-white/65 font-semibold">Conectividade &amp; Telemetria Avançada • Todos os direitos reservados</p>
+          <p className="text-[12px] sm:text-[13px] text-white/70 font-semibold">Conectividade &amp; Telemetria Avançada • Todos os direitos reservados</p>
         </div>
       </motion.div>
     </div>
