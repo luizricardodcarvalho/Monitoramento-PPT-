@@ -47,8 +47,49 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess, theme,
     }, 1500);
   };
 
+  const isBlue = theme === 'blue';
+  
+  // Color classes and values
+  const bgGradient = isBlue 
+    ? "from-[#040d21] via-[#050e1e] to-[#020611]" 
+    : "from-[#011a0c] via-[#05160d] to-[#010905]";
+
+  const orb1Bg = isBlue ? "bg-[#02529C]/30" : "bg-[#00843D]/30";
+  const orb2Bg = isBlue ? "bg-[#00D2FC]/15" : "bg-[#5adc6a]/15";
+  const orb3Bg = isBlue ? "bg-[#02529C]/10" : "bg-[#00843D]/10";
+  const backplateBg = isBlue ? "bg-[#00D2FC]/[0.06]" : "bg-[#5adc6a]/[0.06]";
+  
+  const grid2Gradient = isBlue
+    ? "bg-[linear-gradient(to_right,#00D2FC02_1px,transparent_1px),linear-gradient(to_bottom,#00D2FC02_1px,transparent_1px)]"
+    : "bg-[linear-gradient(to_right,#5adc6a02_1px,transparent_1px),linear-gradient(to_bottom,#5adc6a02_1px,transparent_1px)]";
+
+  const strokeColor = isBlue ? "#00D2FC" : "#5adc6a";
+  const particleBg = isBlue ? "bg-[#00D2FC]/20" : "bg-[#5adc6a]/20";
+  
+  const watermarkText = isBlue ? "text-[#00D2FC]/[0.02]" : "text-[#5adc6a]/[0.02]";
+  
+  const logoBorderHover = isBlue ? "hover:border-[#00D2FC]/30" : "hover:border-[#5adc6a]/30";
+  const subtitleColor = isBlue ? "text-[#38BDF8] filter drop-shadow-[0_0_12px_rgba(0,210,252,0.3)]" : "text-[#6ef27f] filter drop-shadow-[0_0_12px_rgba(90,220,106,0.3)]";
+  
+  const focusBorder = isBlue ? "focus:border-[#00D2FC]" : "focus:border-[#5adc6a]";
+  const focusRing = isBlue ? "focus:ring-[#00D2FC]/20" : "focus:ring-[#5adc6a]/20";
+  const hoverText = isBlue ? "hover:text-[#00D2FC]" : "hover:text-[#5adc6a]";
+  
+  const submitBtnBg = isBlue 
+    ? "from-[#02529C] to-[#01417D] hover:from-[#00D2FC] hover:to-[#38bdf8]" 
+    : "from-[#00843D] to-[#006B32] hover:from-[#5adc6a] hover:to-[#22c55e]";
+    
+  const submitBtnShadow = isBlue
+    ? "shadow-blue-950/40 hover:shadow-[0_0_35px_rgba(0,210,252,0.45)] hover:border-[#38bdf8]/40"
+    : "shadow-green-950/40 hover:shadow-[0_0_35px_rgba(90,220,106,0.45)] hover:border-[#7cfc90]/40";
+
+  const successBg = isBlue ? "bg-[#02529C]/20" : "bg-[#00843D]/20";
+  const successBorder = isBlue ? "border-[#00D2FC]/30" : "border-[#5adc6a]/30";
+  const successText = isBlue ? "text-[#00D2FC]" : "text-[#5adc6a]";
+  const successShadow = isBlue ? "shadow-[0_0_25px_rgba(0,210,252,0.3)]" : "shadow-[0_0_25px_rgba(90,220,106,0.3)]";
+
   return (
-    <div id="login-container" className="min-h-screen w-full bg-gradient-to-br from-[#011a0c] via-[#05160d] to-[#010905] flex items-center justify-center p-4 relative overflow-hidden font-sans select-none">
+    <div id="login-container" className={`min-h-screen w-full bg-gradient-to-br ${bgGradient} flex items-center justify-center p-4 relative overflow-hidden font-sans select-none`}>
       
       {/* Theme Selector Floating Panel */}
       <div className="absolute top-6 right-6 z-50 bg-white/5 backdrop-blur-md border border-white/10 rounded-full p-1 flex items-center shadow-lg">
@@ -79,35 +120,35 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess, theme,
       </div>
       
       {/* High-fidelity glowing orbs in the background */}
-      <div className="absolute top-[-15%] left-[-15%] w-[60%] h-[60%] bg-[#00843D]/30 rounded-full blur-[180px] pointer-events-none" />
-      <div className="absolute bottom-[-15%] right-[-15%] w-[60%] h-[60%] bg-[#5adc6a]/15 rounded-full blur-[180px] pointer-events-none" />
-      <div className="absolute top-[30%] left-[30%] w-[40%] h-[40%] bg-[#00843D]/10 rounded-full blur-[200px] pointer-events-none" />
+      <div className={`absolute top-[-15%] left-[-15%] w-[60%] h-[60%] ${orb1Bg} rounded-full blur-[180px] pointer-events-none`} />
+      <div className={`absolute bottom-[-15%] right-[-15%] w-[60%] h-[60%] ${orb2Bg} rounded-full blur-[180px] pointer-events-none`} />
+      <div className={`absolute top-[30%] left-[30%] w-[40%] h-[40%] ${orb3Bg} rounded-full blur-[200px] pointer-events-none`} />
       
       {/* Diffuse and wide subtle glowing backplate behind the login card for deep atmosphere */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[85%] h-[85%] max-w-[800px] bg-[#5adc6a]/[0.06] rounded-full blur-[220px] pointer-events-none" />
+      <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[85%] h-[85%] max-w-[800px] ${backplateBg} rounded-full blur-[220px] pointer-events-none`} />
       
       {/* High tech abstract subtle grid pattern (double grid for extra depth) */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none" />
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#5adc6a02_1px,transparent_1px),linear-gradient(to_bottom,#5adc6a02_1px,transparent_1px)] bg-[size:1rem_1rem] pointer-events-none" />
+      <div className={`absolute inset-0 ${grid2Gradient} bg-[size:1rem_1rem] pointer-events-none`} />
 
       {/* Decorative Interactive Circuit Board Lines in Background Corners */}
       <svg className="absolute left-0 top-0 w-full h-full pointer-events-none opacity-[0.08] select-none" viewBox="0 0 1000 800" fill="none">
-        <path d="M-100 150 H200 L320 270 V550 L200 670 H-100" stroke="#5adc6a" strokeWidth="2" strokeDasharray="12 6" />
-        <path d="M-50 200 H150 L250 300 V520 L150 620 H-50" stroke="#5adc6a" strokeWidth="1.5" />
-        <path d="M100 50 L180 130 V350 L100 430" stroke="#5adc6a" strokeWidth="1" strokeDasharray="4 4" />
-        <circle cx="200" cy="150" r="5" fill="#5adc6a" className="animate-pulse" />
-        <circle cx="320" cy="270" r="5" fill="#5adc6a" />
-        <circle cx="320" cy="550" r="5" fill="#5adc6a" />
-        <circle cx="200" cy="670" r="5" fill="#5adc6a" />
+        <path d="M-100 150 H200 L320 270 V550 L200 670 H-100" stroke={strokeColor} strokeWidth="2" strokeDasharray="12 6" />
+        <path d="M-50 200 H150 L250 300 V520 L150 620 H-50" stroke={strokeColor} strokeWidth="1.5" />
+        <path d="M100 50 L180 130 V350 L100 430" stroke={strokeColor} strokeWidth="1" strokeDasharray="4 4" />
+        <circle cx="200" cy="150" r="5" fill={strokeColor} className="animate-pulse" />
+        <circle cx="320" cy="270" r="5" fill={strokeColor} />
+        <circle cx="320" cy="550" r="5" fill={strokeColor} />
+        <circle cx="200" cy="670" r="5" fill={strokeColor} />
       </svg>
 
       <svg className="absolute right-0 bottom-0 w-full h-full pointer-events-none opacity-[0.08] select-none" viewBox="0 0 1000 800" fill="none">
-        <path d="M1100 650 H800 L680 530 V250 L800 130 H1100" stroke="#5adc6a" strokeWidth="2" strokeDasharray="12 6" />
-        <path d="M1050 600 H850 L750 500 V280 L850 180 H1050" stroke="#5adc6a" strokeWidth="1.5" />
-        <circle cx="800" cy="650" r="5" fill="#5adc6a" />
-        <circle cx="680" cy="530" r="5" fill="#5adc6a" className="animate-pulse" />
-        <circle cx="680" cy="250" r="5" fill="#5adc6a" />
-        <circle cx="800" cy="130" r="5" fill="#5adc6a" />
+        <path d="M1100 650 H800 L680 530 V250 L800 130 H1100" stroke={strokeColor} strokeWidth="2" strokeDasharray="12 6" />
+        <path d="M1050 600 H850 L750 500 V280 L850 180 H1050" stroke={strokeColor} strokeWidth="1.5" />
+        <circle cx="800" cy="650" r="5" fill={strokeColor} />
+        <circle cx="680" cy="530" r="5" fill={strokeColor} className="animate-pulse" />
+        <circle cx="680" cy="250" r="5" fill={strokeColor} />
+        <circle cx="800" cy="130" r="5" fill={strokeColor} />
       </svg>
 
       {/* Elegant floating green/white light particles that drift organically */}
@@ -122,7 +163,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess, theme,
       ].map((p) => (
         <motion.div
           key={p.id}
-          className={`absolute ${p.size} rounded-full bg-[#5adc6a]/20 blur-[1px] pointer-events-none`}
+          className={`absolute ${p.size} rounded-full ${particleBg} blur-[1px] pointer-events-none`}
           style={{ left: p.x, top: p.y }}
           animate={{
             y: [0, -60, 0],
@@ -139,10 +180,10 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess, theme,
       ))}
 
       {/* Giant high-tech decorative watermark icons behind the scene */}
-      <div className="absolute left-[8%] bottom-[12%] text-[#5adc6a]/[0.02] transform -rotate-12 pointer-events-none select-none">
+      <div className={`absolute left-[8%] bottom-[12%] ${watermarkText} transform -rotate-12 pointer-events-none select-none`}>
         <Tractor size={160} strokeWidth={1} />
       </div>
-      <div className="absolute right-[8%] top-[10%] text-[#5adc6a]/[0.02] transform rotate-12 pointer-events-none select-none">
+      <div className={`absolute right-[8%] top-[10%] ${watermarkText} transform rotate-12 pointer-events-none select-none`}>
         <Sprout size={160} strokeWidth={1} />
       </div>
 
@@ -169,7 +210,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess, theme,
               initial={{ scale: 0.85, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.15, duration: 0.6, type: "spring" }}
-              className="w-52 h-40 bg-white/5 rounded-[36px] p-5 flex items-center justify-center mb-7 border border-white/15 shadow-inner hover:border-[#5adc6a]/30 hover:bg-white/[0.07] transition-all duration-300"
+              className={`w-52 h-40 bg-white/5 rounded-[36px] p-5 flex items-center justify-center mb-7 border border-white/15 shadow-inner ${logoBorderHover} hover:bg-white/[0.07] transition-all duration-300`}
             >
               <ColomboLogo className="w-full h-full text-white filter drop-shadow-[0_4px_12px_rgba(255,255,255,0.06)]" />
             </motion.div>
@@ -184,7 +225,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess, theme,
               <h2 className="text-3xl font-black text-white uppercase tracking-wider">
                 Portal de Monitoramento
               </h2>
-              <p className="text-[#6ef27f] text-sm font-black uppercase tracking-[0.25em] mt-3 filter drop-shadow-[0_0_12px_rgba(90,220,106,0.3)]">
+              <p className={`text-sm font-black uppercase tracking-[0.25em] mt-3 ${subtitleColor}`}>
                 Conectividade &amp; Telemetria Avançada
               </p>
             </motion.div>
@@ -225,7 +266,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess, theme,
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                       placeholder="Usuário"
-                      className="w-full bg-white/[0.04] border border-white/10 focus:border-[#5adc6a] focus:bg-white/[0.08] focus:ring-2 focus:ring-[#5adc6a]/20 text-white text-base font-bold pl-16 pr-6 py-5 rounded-2xl outline-none transition-all placeholder:text-gray-300"
+                      className={`w-full bg-white/[0.04] border border-white/10 ${focusBorder} focus:bg-white/[0.08] focus:ring-2 ${focusRing} text-white text-base font-bold pl-16 pr-6 py-5 rounded-2xl outline-none transition-all placeholder:text-gray-300`}
                     />
                   </div>
                 </div>
@@ -245,13 +286,13 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess, theme,
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Senha do sistema"
-                      className="w-full bg-white/[0.04] border border-white/10 focus:border-[#5adc6a] focus:bg-white/[0.08] focus:ring-2 focus:ring-[#5adc6a]/20 text-white text-base font-bold pl-16 pr-16 py-5 rounded-2xl outline-none transition-all placeholder:text-gray-300"
+                      className={`w-full bg-white/[0.04] border border-white/10 ${focusBorder} focus:bg-white/[0.08] focus:ring-2 ${focusRing} text-white text-base font-bold pl-16 pr-16 py-5 rounded-2xl outline-none transition-all placeholder:text-gray-300`}
                     />
                     <button
                       type="button"
                       tabIndex={-1}
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-6 text-gray-400 hover:text-[#5adc6a] hover:scale-110 active:scale-95 transition-all p-1"
+                      className={`absolute right-6 text-gray-400 ${hoverText} hover:scale-110 active:scale-95 transition-all p-1`}
                     >
                       {showPassword ? <EyeOff size={22} /> : <Eye size={22} />}
                     </button>
@@ -264,7 +305,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess, theme,
                   whileTap={{ scale: 0.985 }}
                   type="submit"
                   disabled={isLoading}
-                  className="w-full h-[64px] bg-gradient-to-r from-[#00843D] to-[#006B32] hover:from-[#5adc6a] hover:to-[#22c55e] text-white font-black text-base uppercase tracking-widest rounded-2xl shadow-2xl shadow-green-950/40 hover:shadow-[0_0_35px_rgba(90,220,106,0.45)] hover:border-[#7cfc90]/40 border border-transparent transition-all duration-300 flex items-center justify-center gap-3 cursor-pointer disabled:opacity-50 disabled:pointer-events-none mt-5 group"
+                  className={`w-full h-[64px] bg-gradient-to-r ${submitBtnBg} text-white font-black text-base uppercase tracking-widest rounded-2xl border border-transparent transition-all duration-300 flex items-center justify-center gap-3 cursor-pointer disabled:opacity-50 disabled:pointer-events-none mt-5 group ${submitBtnShadow}`}
                 >
                   {isLoading ? (
                     <div className="flex items-center gap-3">
@@ -291,7 +332,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess, theme,
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
               >
-                <div className="w-20 h-20 bg-[#00843D]/20 border border-[#5adc6a]/30 rounded-full flex items-center justify-center text-[#5adc6a] shadow-[0_0_25px_rgba(90,220,106,0.3)]">
+                <div className={`w-20 h-20 ${successBg} border ${successBorder} rounded-full flex items-center justify-center ${successText} ${successShadow}`}>
                   <motion.svg 
                     className="w-10 h-10" 
                     fill="none" 
@@ -307,7 +348,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess, theme,
                 </div>
                 <div className="space-y-2">
                   <h3 className="text-white font-black uppercase text-lg tracking-wider">Acesso Permitido</h3>
-                  <p className="text-[#5adc6a] font-bold uppercase text-xs tracking-widest">Iniciando sessão do operador Eder</p>
+                  <p className={`${successText} font-bold uppercase text-xs tracking-widest`}>Iniciando sessão do operador Eder</p>
                 </div>
               </motion.div>
             )}

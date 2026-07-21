@@ -2491,13 +2491,61 @@ export default function App() {
       [data-theme="blue"] .border-emerald-500\\/20 { border-color: rgba(0, 210, 252, 0.2) !important; }
       [data-theme="blue"] .focus\\:border-emerald-400:focus { border-color: #00D2FC !important; }
 
-      /* Dark green #005B2B, #003B1C, #00381A, #00FF66 overrides for blue theme */
-      [data-theme="blue"] .bg-\\[\\#005B2B\\]:not([data-theme-ignore="true"]) { background-color: #01417D !important; }
+      /* Dark green #005B2B, #003B1C, #00381A, #00FF66, #004d22, #004D22 overrides for blue theme */
+      [data-theme="blue"] .bg-\\[\\#005B2B\\]:not([data-theme-ignore="true"]),
+      [data-theme="blue"] .bg-\\[\\#005b2b\\]:not([data-theme-ignore="true"]) { background-color: #01417D !important; }
+      [data-theme="blue"] .bg-\\[\\#004d22\\]:not([data-theme-ignore="true"]),
+      [data-theme="blue"] .bg-\\[\\#004D22\\]:not([data-theme-ignore="true"]) { background-color: #012b54 !important; }
+      [data-theme="blue"] .bg-\\[\\#f4faf6\\] { background-color: rgba(0, 210, 252, 0.04) !important; }
+      [data-theme="blue"] .bg-\\[\\#FAFDFB\\] { background-color: rgba(0, 210, 252, 0.02) !important; }
+      
+      [data-theme="blue"] .hover\\:bg-\\[\\#00381A\\]:hover,
+      [data-theme="blue"] .hover\\:bg-\\[\\#00381a\\]:hover { background-color: #01152a !important; }
+      [data-theme="blue"] .hover\\:bg-\\[\\#004d22\\]:hover,
+      [data-theme="blue"] .hover\\:bg-\\[\\#004D22\\]:hover { background-color: #012b54 !important; }
+      [data-theme="blue"] .hover\\:bg-\\[\\#005B2B\\]:hover,
+      [data-theme="blue"] .hover\\:bg-\\[\\#005b2b\\]:hover { background-color: #01417D !important; }
+      [data-theme="blue"] .hover\\:bg-\\[\\#006a30\\]:hover,
+      [data-theme="blue"] .hover\\:bg-\\[\\#006A30\\]:hover { background-color: #01417D !important; }
+      [data-theme="blue"] .hover\\:bg-\\[\\#006B32\\]:hover,
+      [data-theme="blue"] .hover\\:bg-\\[\\#006b32\\]:hover { background-color: #01417D !important; }
+      [data-theme="blue"] .hover\\:bg-\\[\\#006e32\\]:hover,
+      [data-theme="blue"] .hover\\:bg-\\[\\#006E32\\]:hover { background-color: #01417D !important; }
+      [data-theme="blue"] .hover\\:bg-\\[\\#00843D\\]:hover,
+      [data-theme="blue"] .hover\\:bg-\\[\\#00843d\\]:hover { background-color: #004585 !important; }
+      [data-theme="blue"] .hover\\:bg-\\[\\#5adc6a\\]:hover,
+      [data-theme="blue"] .hover\\:bg-\\[\\#5ADC6A\\]:hover { background-color: #00D2FC !important; }
+      
       [data-theme="blue"] .text-\\[\\#005B2B\\]:not([data-theme-ignore="true"]) { color: #00D2FC !important; }
+      [data-theme="blue"] .text-\\[\\#004d22\\]:not([data-theme-ignore="true"]),
+      [data-theme="blue"] .text-\\[\\#004D22\\]:not([data-theme-ignore="true"]) { color: #00D2FC !important; }
+      [data-theme="blue"] .text-\\[\\#e2f5e5\\]:not([data-theme-ignore="true"]) { color: #00D2FC !important; }
+      
+      [data-theme="blue"] .hover\\:text-\\[\\#004d22\\]:hover,
+      [data-theme="blue"] .hover\\:text-\\[\\#004D22\\]:hover { color: #00D2FC !important; }
+      [data-theme="blue"] .hover\\:text-\\[\\#00843D\\]:hover,
+      [data-theme="blue"] .hover\\:text-\\[\\#00843d\\]:hover { color: #00D2FC !important; }
+      [data-theme="blue"] .hover\\:text-\\[\\#5adc6a\\]:hover,
+      [data-theme="blue"] .hover\\:text-\\[\\#5ADC6A\\]:hover { color: #00D2FC !important; }
+
       [data-theme="blue"] .border-\\[\\#005B2B\\]:not([data-theme-ignore="true"]) { border-color: #01417D !important; }
       [data-theme="blue"] .border-\\[\\#005B2B\\]\\/10:not([data-theme-ignore="true"]) { border-color: rgba(1, 65, 125, 0.1) !important; }
       [data-theme="blue"] .border-\\[\\#005B2B\\]\\/20:not([data-theme-ignore="true"]) { border-color: rgba(1, 65, 125, 0.2) !important; }
       [data-theme="blue"] .border-\\[\\#00381A\\]:not([data-theme-ignore="true"]) { border-color: #012b54 !important; }
+      [data-theme="blue"] .border-\\[\\#004d22\\],
+      [data-theme="blue"] .border-\\[\\#004D22\\] { border-color: #012b54 !important; }
+      [data-theme="blue"] .border-\\[\\#005a28\\],
+      [data-theme="blue"] .border-\\[\\#005A28\\] { border-color: #012b54 !important; }
+      [data-theme="blue"] .border-\\[\\#006B32\\],
+      [data-theme="blue"] .border-\\[\\#006b32\\] { border-color: #01417D !important; }
+      
+      [data-theme="blue"] .hover\\:border-\\[\\#00843D\\]:hover,
+      [data-theme="blue"] .hover\\:border-\\[\\#00843d\\]:hover { border-color: #02529C !important; }
+      [data-theme="blue"] .hover\\:border-\\[\\#5adc6a\\]:hover,
+      [data-theme="blue"] .hover\\:border-\\[\\#5ADC6A\\]:hover { border-color: #00D2FC !important; }
+      [data-theme="blue"] .hover\\:border-\\[\\#7cfc90\\]:hover,
+      [data-theme="blue"] .hover\\:border-\\[\\#7CFC90\\]:hover { border-color: #00D2FC !important; }
+
       [data-theme="blue"] .focus\\:ring-\\[\\#005B2B\\]:not([data-theme-ignore="true"]):focus { --tw-ring-color: #01417D !important; }
       [data-theme="blue"] .text-\\[\\#00FF66\\]:not([data-theme-ignore="true"]) { color: #00D2FC !important; }
 
