@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import * as XLSX from 'xlsx';
+import { parseTxtContent } from '../lib/txtParser';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   CloudRain, 
@@ -479,22 +480,29 @@ export default function Pluviometria({ isDarkMode = false }: { isDarkMode?: bool
     }));
   }, [importedData, selectedUsina, selectedRegion, selectedMunicipio]);
 
-  // Excel Ingestor (Smart Ingestion)
+  // Excel & TXT Ingestor (Smart Ingestion)
   const handleExcelImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    const isTxt = file.name.endsWith('.txt');
     const reader = new FileReader();
     reader.onload = (evt) => {
       try {
-        const bstr = evt.target?.result;
-        const wb = XLSX.read(bstr, { type: 'binary' });
+        const fileContent = evt.target?.result;
+        let wb: any;
+
+        if (isTxt) {
+          wb = parseTxtContent(fileContent as string);
+        } else {
+          wb = XLSX.read(fileContent, { type: 'binary' });
+        }
         
         const imported: any = {};
         
         wb.SheetNames.forEach((sheetName) => {
           const ws = wb.Sheets[sheetName];
-          const rawRows = XLSX.utils.sheet_to_json<any>(ws);
+          const rawRows = Array.isArray(ws) ? ws : XLSX.utils.sheet_to_json<any>(ws);
           if (rawRows.length === 0) return;
           
           const sampleRow = rawRows[0];
@@ -592,13 +600,18 @@ export default function Pluviometria({ isDarkMode = false }: { isDarkMode?: bool
         // Notify other components
         window.dispatchEvent(new Event('diario_pluviometria_updated'));
         
-        alert(`Sucesso! Planilha de Pluviometria importada com sucesso. Horário de sincronização: ${formattedDate}`);
+        alert(`Sucesso! Planilha / Arquivo de Pluviometria importado com sucesso. Horário de sincronização: ${formattedDate}`);
       } catch (err) {
         console.error(err);
-        alert('Erro ao carregar a planilha do Excel de Pluviometria. Verifique se as colunas estão corretas.');
+        alert('Erro ao carregar o arquivo de Pluviometria. Verifique se as colunas estão corretas.');
       }
     };
-    reader.readAsBinaryString(file);
+
+    if (isTxt) {
+      reader.readAsText(file, "UTF-8");
+    } else {
+      reader.readAsBinaryString(file);
+    }
   };
 
   // ----------------------------------------------------
@@ -686,10 +699,11 @@ export default function Pluviometria({ isDarkMode = false }: { isDarkMode?: bool
             <FileSpreadsheet size={16} />
             <span>Importar Planilha</span>
             <input 
+              id="pluviometria-file-upload"
               type="file" 
-              accept=".xlsx, .xls" 
-              onChange={handleExcelImport} 
               className="hidden" 
+              accept=".xlsx, .xls, .txt" 
+              onChange={handleExcelImport} 
             />
           </label>
         </div>

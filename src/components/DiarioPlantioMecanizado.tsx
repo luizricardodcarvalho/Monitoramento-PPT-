@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { parseTxtContent } from '../lib/txtParser';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   TrendingUp, 
@@ -667,21 +668,29 @@ export default function DiarioPlantioMecanizado({ isDarkMode = false }: { isDark
   }, [importedData]);
 
   // Excel Ingestion Handler with smart structure identifier
+  // Excel & TXT Ingestion Handler with smart structure identifier
   const handleExcelImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    const isTxt = file.name.endsWith('.txt');
     const reader = new FileReader();
     reader.onload = (evt) => {
       try {
-        const bstr = evt.target?.result;
-        const wb = XLSX.read(bstr, { type: 'binary' });
+        const fileContent = evt.target?.result;
+        let wb: any;
+
+        if (isTxt) {
+          wb = parseTxtContent(fileContent as string);
+        } else {
+          wb = XLSX.read(fileContent, { type: 'binary' });
+        }
         
         const imported: any = {};
         
         wb.SheetNames.forEach((sheetName) => {
           const ws = wb.Sheets[sheetName];
-          const rawRows = XLSX.utils.sheet_to_json<any>(ws);
+          const rawRows = Array.isArray(ws) ? ws : XLSX.utils.sheet_to_json<any>(ws);
           if (rawRows.length === 0) return;
           
           const sampleRow = rawRows[0];
@@ -884,13 +893,17 @@ export default function DiarioPlantioMecanizado({ isDarkMode = false }: { isDark
         // Dispara evento global para outros componentes escutarem a atualização
         window.dispatchEvent(new Event('diario_plantio_updated'));
         
-        alert(`Sucesso! Planilha de Plantio carregada e atualizada. Horário de sincronização definido para ${formattedDate}`);
+        alert(`Sucesso! Arquivo / Planilha de Plantio carregado e atualizado. Horário de sincronização definido para ${formattedDate}`);
       } catch (err) {
         console.error(err);
-        alert('Erro ao carregar a planilha do Excel. Certifique-se que o arquivo é válido.');
+        alert('Erro ao carregar o arquivo. Certifique-se que o formato está correto.');
       }
     };
-    reader.readAsBinaryString(file);
+    if (isTxt) {
+      reader.readAsText(file, "UTF-8");
+    } else {
+      reader.readAsBinaryString(file);
+    }
   };
 
   return (
@@ -932,7 +945,7 @@ export default function DiarioPlantioMecanizado({ isDarkMode = false }: { isDark
             <span>Importar Planilha</span>
             <input 
               type="file" 
-              accept=".xlsx, .xls" 
+              accept=".xlsx, .xls, .txt" 
               onChange={handleExcelImport} 
               className="hidden" 
             />

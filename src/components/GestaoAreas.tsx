@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import * as XLSX from 'xlsx';
+import { parseTxtContent } from '../lib/txtParser';
 import { 
   LayoutDashboard, 
   Table, 
@@ -159,11 +161,27 @@ export const GestaoAreas = ({
     if (savedTime) {
       setLastUpdateTime(savedTime);
     }
+    const savedGerencial = localStorage.getItem('diario_coa_gerencial_data');
+    if (savedGerencial) {
+      try { setGerencialData(JSON.parse(savedGerencial)); } catch (e) { console.error(e); }
+    }
+    const savedBanco = localStorage.getItem('diario_coa_banco_data');
+    if (savedBanco) {
+      try { setBancoData(JSON.parse(savedBanco)); } catch (e) { console.error(e); }
+    }
 
     const handleSync = () => {
       const updatedTime = localStorage.getItem('diario_coa_last_update');
       if (updatedTime) {
         setLastUpdateTime(updatedTime);
+      }
+      const updatedGerencial = localStorage.getItem('diario_coa_gerencial_data');
+      if (updatedGerencial) {
+        try { setGerencialData(JSON.parse(updatedGerencial)); } catch (e) { console.error(e); }
+      }
+      const updatedBanco = localStorage.getItem('diario_coa_banco_data');
+      if (updatedBanco) {
+        try { setBancoData(JSON.parse(updatedBanco)); } catch (e) { console.error(e); }
       }
     };
     window.addEventListener('diario_coa_updated', handleSync);
@@ -176,9 +194,123 @@ export const GestaoAreas = ({
     const file = e.target.files?.[0];
     if (!file) return;
 
+    const isTxt = file.name.endsWith('.txt');
     const reader = new FileReader();
     reader.onload = (evt) => {
       try {
+        const fileContent = evt.target?.result;
+        let wb: any;
+
+        if (isTxt) {
+          wb = parseTxtContent(fileContent as string);
+        } else {
+          wb = XLSX.read(fileContent, { type: 'binary' });
+        }
+
+        let updatedGerencial = false;
+        let updatedBanco = false;
+
+        wb.SheetNames.forEach((sheetName) => {
+          const ws = wb.Sheets[sheetName];
+          const rawRows = Array.isArray(ws) ? ws : XLSX.utils.sheet_to_json<any>(ws);
+          if (rawRows.length === 0) return;
+
+          const keys = Object.keys(rawRows[0]).map(k => k.toLowerCase().trim());
+          const hasKeyMatching = (keywords: string[]) => keys.some(k => keywords.some(kw => k.includes(kw)));
+
+          // Parse Acompanhamento Gerencial
+          if (hasKeyMatching(['modalidade', 'frente']) && hasKeyMatching(['planej', 'realiz'])) {
+            const mapped = rawRows.map((row: any) => {
+              const find = (keywords: string[], def: any) => {
+                const k = Object.keys(row).find(key => keywords.some(kw => key.toLowerCase().trim().includes(kw)));
+                return k !== undefined ? row[k] : def;
+              };
+              const parseNum = (val: any) => {
+                if (typeof val === 'number') return val;
+                if (typeof val === 'string') {
+                  const clean = val.replace(/\./g, '').replace(',', '.').replace(/[^\d.-]/g, '');
+                  return parseFloat(clean) || 0;
+                }
+                return 0;
+              };
+              return {
+                modalidade: String(find(['modalidade', 'tipo', 'operacao'], 'MAN/PRÓPRIO')).toUpperCase(),
+                frente: String(find(['frente', 'frente_trabalho', 'frente trabalho', 'area'], '71-1')),
+                dia: {
+                  planej: parseNum(find(['dia_planej', 'dia planej', 'planej_dia', 'dia'], 0)),
+                  realiz: parseNum(find(['dia_realiz', 'dia realiz', 'realiz_dia', 'realizado'], 0)),
+                  chuva: parseNum(find(['dia_chuva', 'dia chuva', 'chuva_dia', 'chuva'], 0))
+                },
+                mes: {
+                  planej: parseNum(find(['mes_planej', 'mes planej', 'planej_mes', 'mes'], 0)),
+                  realiz: parseNum(find(['mes_realiz', 'mes realiz', 'realiz_mes', 'realizado'], 0)),
+                  chuva: parseNum(find(['mes_chuva', 'mes chuva', 'chuva_mes', 'chuva'], 0))
+                },
+                acumulado: {
+                  planej: parseNum(find(['acumulado_planej', 'acumulado planej', 'planej_acumulado', 'acumulado'], 0)),
+                  realiz: parseNum(find(['acumulado_realiz', 'acumulado realiz', 'realiz_acumulado', 'realizado'], 0)),
+                  chuva: parseNum(find(['acumulado_chuva', 'acumulado chuva', 'chuva_acumulado', 'chuva'], 0))
+                }
+              };
+            });
+            setGerencialData(mapped);
+            localStorage.setItem('diario_coa_gerencial_data', JSON.stringify(mapped));
+            updatedGerencial = true;
+          }
+
+          // Parse Banco de Áreas Master
+          else if (hasKeyMatching(['talhao', 'variedade', 'area'])) {
+            const mapped = rawRows.map((row: any, i: number) => {
+              const find = (keywords: string[], def: any) => {
+                const k = Object.keys(row).find(key => keywords.some(kw => key.toLowerCase().trim().includes(kw)));
+                return k !== undefined ? row[k] : def;
+              };
+              const parseNum = (val: any) => {
+                if (typeof val === 'number') return val;
+                if (typeof val === 'string') {
+                  const clean = val.replace(/\./g, '').replace(',', '.').replace(/[^\d.-]/g, '');
+                  return parseFloat(clean) || 0;
+                }
+                return 0;
+              };
+              return {
+                id: String(find(['id', 'codigo'], i + 1)),
+                fazenda: String(find(['fazenda', 'propriedade'], '20008')),
+                quadra: String(find(['quadra', 'gleba'], '1')),
+                talhao: String(find(['talhao', 'talhão'], '1')),
+                areaPlantio: parseNum(find(['area', 'area_plantio', 'hectares', 'tamanho'], 1.0)),
+                sistemaPlantio: String(find(['sistema', 'sistema_plantio', 'tipo'], 'Mecanizado Convenc')),
+                renovacao: String(find(['renovacao', 'renovação'], 'Renovação')),
+                variedade: String(find(['variedade', 'cultivar'], 'CTC 3445')),
+                flegPlantio: String(find(['fleg', 'fleg_plantio', 'status'], 'Plantio Normal')),
+                plantioCco: parseNum(find(['cco', 'plantio_cco'], 0)),
+                plantioPims: parseNum(find(['pims', 'plantio_pims'], 0)),
+                statusArea: String(find(['status', 'status_area'], 'Á PLANTAR')).toUpperCase(),
+                situacaoPlantio: String(find(['situacao', 'situacao_plantio'], 'A')),
+                replantio: !!find(['replantio'], false),
+                confSistPlantio: String(find(['conf_sist', 'conf_sist_plantio'], 'Ok')),
+                confSistArea: String(find(['conf_sist_area'], 'ok-16/04/2026')),
+                sistematizacao: parseNum(find(['sistematizacao', 'sistematização'], 1.0)),
+                sulcacao: parseNum(find(['sulcacao', 'sulcação'], 0)),
+                cobricao: parseNum(find(['cobricao', 'cobrição'], 0)),
+                distribuicao: parseNum(find(['distribuicao', 'distribuição'], 0)),
+                transporteMuda: parseNum(find(['transporte_muda', 'transporte muda'], 0)),
+                carregamento: parseNum(find(['carregamento'], 0)),
+                descarregamento: parseNum(find(['descarregamento'], 0)),
+                corteMuda: parseNum(find(['corte_muda', 'corte muda'], 0)),
+                transporteInsumos: parseNum(find(['transporte_insumos', 'transporte insumos'], 0)),
+                apoio: parseNum(find(['apoio'], 0)),
+                tampacao: parseNum(find(['tampacao', 'tampação'], 0)),
+                quebraLombo: parseNum(find(['quebra_lombo', 'quebra lombo'], 0)),
+                aplicHerbicida: parseNum(find(['aplic_herbicida', 'herbicida'], 0)),
+              };
+            });
+            setBancoData(mapped);
+            localStorage.setItem('diario_coa_banco_data', JSON.stringify(mapped));
+            updatedBanco = true;
+          }
+        });
+
         const now = new Date();
         const formattedDate = `${now.getDate().toString().padStart(2, '0')}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getFullYear()} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
         
@@ -188,16 +320,24 @@ export const GestaoAreas = ({
         window.dispatchEvent(new Event('diario_coa_updated'));
 
         if (onAddLog) {
-          onAddLog('Boletim', 'Importação Excel', `Nova planilha de áreas importada por luizricardocarvalhod@gmail.com - Atualizado em ${formattedDate}`);
+          onAddLog('Boletim', 'Importação', `Nova planilha / arquivo importado por luizricardocarvalhod@gmail.com - Atualizado em ${formattedDate}`);
         }
 
-        alert(`Sucesso! Sincronização da Gestão de Áreas e Diário COA efetuada. Horário de atualização definido para ${formattedDate}`);
+        let msg = `Sucesso! Sincronização de arquivos efetuada.`;
+        if (updatedGerencial) msg += ` (Acompanhamento Gerencial atualizado)`;
+        if (updatedBanco) msg += ` (Banco de Áreas Master atualizado)`;
+        alert(`${msg}\nHorário de sincronização definido para ${formattedDate}`);
       } catch (err) {
         console.error(err);
-        alert('Erro ao carregar a planilha do Excel.');
+        alert('Erro ao carregar o arquivo. Certifique-se que o formato está correto.');
       }
     };
-    reader.readAsBinaryString(file);
+
+    if (isTxt) {
+      reader.readAsText(file, "UTF-8");
+    } else {
+      reader.readAsBinaryString(file);
+    }
   };
   
   // State for Editing Area
@@ -825,7 +965,7 @@ export const GestaoAreas = ({
               <span>Importar Planilha</span>
               <input 
                 type="file" 
-                accept=".xlsx, .xls" 
+                accept=".xlsx, .xls, .txt" 
                 onChange={handleExcelImport} 
                 className="hidden" 
               />

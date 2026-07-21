@@ -99,6 +99,7 @@ import DiarioCoaProducoes from './components/DiarioCoaProducoes';
 import DiarioPlantioMecanizado from './components/DiarioPlantioMecanizado';
 import Pluviometria from './components/Pluviometria';
 import { INITIAL_DDS_TOPICS, DdsTopic } from './data/ddsTopicsData';
+import { LoginScreen } from './components/LoginScreen';
 
 // Helper for tailwind classes
 function cn(...inputs: ClassValue[]) {
@@ -614,6 +615,9 @@ const generateHtmlReport = (data: any[], filename: string) => {
 };
 
 export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    return localStorage.getItem('ppt_is_logged_in') === 'true';
+  });
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [activeMonitoramentoSubTab, setActiveMonitoramentoSubTab] = useState('Frentes');
 
@@ -2297,6 +2301,10 @@ export default function App() {
     return frentes.filter(f => f.cidade === selectedUsina);
   }, [frentes, selectedUsina]);
 
+  if (!isLoggedIn) {
+    return <LoginScreen onLoginSuccess={() => setIsLoggedIn(true)} />;
+  }
+
   return (
     <div className={cn("flex h-screen w-full bg-[#F3F4F6] font-sans overflow-hidden transition-colors duration-300", isDarkMode && "dark")}>
       {activeTab === 'Visão Plantio' && (
@@ -2424,6 +2432,22 @@ export default function App() {
               )}
             </div>
           </div>
+        </div>
+
+        {/* LOGOUT SECURE ACTION */}
+        <div className="p-4 border-t border-white/10 shrink-0 bg-black/20">
+          <button
+            onClick={() => {
+              if (confirm('Deseja realmente encerrar sua sessão no sistema?')) {
+                localStorage.removeItem('ppt_is_logged_in');
+                setIsLoggedIn(false);
+              }
+            }}
+            className="w-full py-3 bg-red-600/15 hover:bg-red-600/25 border border-red-500/25 text-red-200 hover:text-white rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95"
+          >
+            <Lock size={12} />
+            Encerrar Sessão
+          </button>
         </div>
       </aside>
 
@@ -5341,45 +5365,6 @@ export default function App() {
                   <h2 className="text-2xl font-black text-gray-900 uppercase tracking-tight">Central de Exportação &amp; Relatórios</h2>
                   <p className="text-gray-500 font-bold text-xs uppercase tracking-widest mt-1">Gere relatórios gerenciais, visualize dados integrados e compartilhe em múltiplas plataformas</p>
                 </div>
-              </div>
-
-              {/* DOCUMENTAÇÃO TÉCNICA OFICIAL BANNER */}
-              <div className="bg-emerald-50 border-2 border-emerald-500/20 p-6 sm:p-8 rounded-[32px] text-gray-900 shadow-md relative overflow-hidden text-left flex flex-col md:flex-row items-center gap-6">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full -translate-y-24 translate-x-24 blur-2xl pointer-events-none" />
-                <div className="w-16 h-16 bg-[#00843D] text-white rounded-2xl flex items-center justify-center shadow-md shrink-0">
-                  <FileCode size={32} />
-                </div>
-                <div className="flex-1 space-y-2">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-[8px] font-black text-[#00843D] uppercase tracking-[0.25em] bg-emerald-100/80 px-2.5 py-1 rounded-md">
-                      Documento de Engenharia de Software
-                    </span>
-                    <span className="text-[8px] font-black text-emerald-800 uppercase tracking-[0.25em] bg-yellow-100 px-2.5 py-1 rounded-md">
-                      Versão 1.0 (Primeira Versão Oficial)
-                    </span>
-                  </div>
-                  <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">
-                    Documentação Técnica Geral do COA (v1.0)
-                  </h3>
-                  <p className="text-gray-600 font-semibold text-[11px] leading-relaxed">
-                    Especificações técnicas oficiais contendo os 50 módulos regulamentares: arquitetura de software, diagramas C4 e UML, regras de negócios da Colombo Agroindústria, dicionário de dados do banco de dados PostgreSQL, matriz RBAC de controle de permissões e catálogo de rotas.
-                  </p>
-                  <p className="text-[10px] text-gray-500 font-semibold tracking-wide">
-                    Autor &amp; Responsável Técnico: <span className="text-slate-900 font-black">Luiz Ricardo Dominguês Carvalho</span>
-                    <span className="mx-2 text-gray-300">•</span>
-                    Cargo: <span className="text-[#00843D] font-black">Analista Logística Agroind. JR</span>
-                  </p>
-                </div>
-                <a
-                  href="/documentacao_tecnica_coa.pdf"
-                  download="DOCUMENTACAO_TECNICA_COA_COLOMBO.pdf"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full md:w-auto shrink-0 bg-[#00843D] hover:bg-[#005B2B] text-white px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-emerald-700/10 transition-all cursor-pointer scale-100 hover:scale-[1.02]"
-                >
-                  <Download size={14} />
-                  Baixar PDF Oficial
-                </a>
               </div>
 
               {/* INTERACTIVE SEARCH WIDGET (MANOPLA DE PESQUISA) */}

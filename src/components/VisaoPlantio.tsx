@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import * as XLSX from 'xlsx';
+import { parseTxtContent } from '../lib/txtParser';
 import logoImg from '../assets/images/colombo_gestao_logo_1784131662820.jpg';
 import { 
   ArrowLeft, 
@@ -340,14 +341,22 @@ export const VisaoPlantio: React.FC<VisaoPlantioProps> = ({
     const file = e.target.files?.[0];
     if (!file) return;
 
+    const isTxt = file.name.endsWith('.txt');
     const reader = new FileReader();
     reader.onload = (evt) => {
       try {
-        const bstr = evt.target?.result;
-        const wb = XLSX.read(bstr, { type: 'binary' });
+        const fileContent = evt.target?.result;
+        let wb: any;
+
+        if (isTxt) {
+          wb = parseTxtContent(fileContent as string);
+        } else {
+          wb = XLSX.read(fileContent, { type: 'binary' });
+        }
+
         const wsname = wb.SheetNames[0];
         const ws = wb.Sheets[wsname];
-        const data = XLSX.utils.sheet_to_json<any>(ws);
+        const data = Array.isArray(ws) ? ws : XLSX.utils.sheet_to_json<any>(ws);
 
         const mappedRows: ExcelPlantioRow[] = [];
         data.forEach((row: any) => {
@@ -410,10 +419,15 @@ export const VisaoPlantio: React.FC<VisaoPlantioProps> = ({
         }
       } catch (err) {
         console.error(err);
-        alert('Erro ao processar arquivo Excel. Certifique-se de que é um arquivo válido.');
+        alert('Erro ao processar o arquivo. Certifique-se de que é um formato válido.');
       }
     };
-    reader.readAsBinaryString(file);
+
+    if (isTxt) {
+      reader.readAsText(file, "UTF-8");
+    } else {
+      reader.readAsBinaryString(file);
+    }
   };
 
   // State for manual overrides for each card, per usina
@@ -1116,7 +1130,7 @@ export const VisaoPlantio: React.FC<VisaoPlantioProps> = ({
                 <input 
                   type="file" 
                   id="excel-upload-input" 
-                  accept=".xlsx, .xls" 
+                  accept=".xlsx, .xls, .txt" 
                   onChange={handleFileUpload} 
                   className="hidden" 
                 />

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { parseTxtContent } from '../lib/txtParser';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   BarChart, 
@@ -205,22 +206,29 @@ export default function DiarioCoaProducoes({ isDarkMode = false }: { isDarkMode?
     };
   }, []);
 
-  // Excel Ingestion Handler with smart structure identifier
+  // Excel & TXT Ingestion Handler with smart structure identifier
   const handleExcelImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    const isTxt = file.name.endsWith('.txt');
     const reader = new FileReader();
     reader.onload = (evt) => {
       try {
-        const bstr = evt.target?.result;
-        const wb = XLSX.read(bstr, { type: 'binary' });
+        const fileContent = evt.target?.result;
+        let wb: any;
+
+        if (isTxt) {
+          wb = parseTxtContent(fileContent as string);
+        } else {
+          wb = XLSX.read(fileContent, { type: 'binary' });
+        }
         
         const imported: any = {};
         
         wb.SheetNames.forEach((sheetName) => {
           const ws = wb.Sheets[sheetName];
-          const rawRows = XLSX.utils.sheet_to_json<any>(ws);
+          const rawRows = Array.isArray(ws) ? ws : XLSX.utils.sheet_to_json<any>(ws);
           if (rawRows.length === 0) return;
           
           const sampleRow = rawRows[0];
@@ -444,7 +452,11 @@ export default function DiarioCoaProducoes({ isDarkMode = false }: { isDarkMode?
         alert('Erro ao carregar a planilha do Excel. Certifique-se que o arquivo é válido.');
       }
     };
-    reader.readAsBinaryString(file);
+    if (isTxt) {
+      reader.readAsText(file, "UTF-8");
+    } else {
+      reader.readAsBinaryString(file);
+    }
   };
 
   // --- DYNAMIC FACTORS COMPUTATION ---
@@ -900,7 +912,7 @@ export default function DiarioCoaProducoes({ isDarkMode = false }: { isDarkMode?
             <span>Importar Planilha</span>
             <input 
               type="file" 
-              accept=".xlsx, .xls" 
+              accept=".xlsx, .xls, .txt" 
               onChange={handleExcelImport} 
               className="hidden" 
             />
