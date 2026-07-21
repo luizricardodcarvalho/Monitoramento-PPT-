@@ -618,7 +618,35 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     return localStorage.getItem('ppt_is_logged_in') === 'true';
   });
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    return localStorage.getItem('ppt_is_dark_mode') === 'true';
+  });
+  const [theme, setTheme] = useState<'green' | 'blue'>(() => {
+    const saved = localStorage.getItem('ppt_color_theme');
+    return (saved === 'blue' ? 'blue' : 'green');
+  });
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
+    return localStorage.getItem('ppt_is_sidebar_collapsed') === 'true';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('ppt_is_dark_mode', isDarkMode ? 'true' : 'false');
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDarkMode]);
+
+  useEffect(() => {
+    localStorage.setItem('ppt_color_theme', theme);
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
+
+  useEffect(() => {
+    localStorage.setItem('ppt_is_sidebar_collapsed', isSidebarCollapsed ? 'true' : 'false');
+  }, [isSidebarCollapsed]);
+
   const [activeMonitoramentoSubTab, setActiveMonitoramentoSubTab] = useState('Frentes');
 
   // Protect the application against easy inspection and source viewing using key blockers and disabling right click
@@ -2301,12 +2329,136 @@ export default function App() {
     return frentes.filter(f => f.cidade === selectedUsina);
   }, [frentes, selectedUsina]);
 
+  const themeStyleBlock = (
+    <style>{`
+      /* Safety net to preserve status green colors across themes */
+      [data-theme] .status-label-ignore { color: #00843D !important; fill: #00843D !important; }
+      [data-theme] [data-theme-ignore="true"] { color: #00843D !important; fill: #00843D !important; }
+      [data-theme] .custom-green-scrollbar h2.text-\\[\\#00843D\\] { color: #00843D !important; }
+
+      /* Custom Global Color Theme Overrides */
+      [data-theme="blue"] {
+        --color-primary: #02529C;
+        --color-accent: #00D2FC;
+      }
+
+      /* Background overrides */
+      [data-theme="blue"] .bg-\\[\\#00843D\\]:not([data-theme-ignore="true"]) { background-color: #02529C !important; }
+      [data-theme="blue"] .hover\\:bg-\\[\\#00843D\\]:not([data-theme-ignore="true"]):hover { background-color: #004585 !important; }
+      [data-theme="blue"] .bg-\\[\\#006B32\\]:not([data-theme-ignore="true"]) { background-color: #01417D !important; }
+      [data-theme="blue"] .bg-\\[\\#5adc6a\\]:not([data-theme-ignore="true"]) { background-color: #00D2FC !important; }
+      [data-theme="blue"] .bg-\\[\\#5adc6a\\]\\/15:not([data-theme-ignore="true"]) { background-color: rgba(0, 210, 252, 0.15) !important; }
+      [data-theme="blue"] .bg-\\[\\#5adc6a\\]\\/20:not([data-theme-ignore="true"]) { background-color: rgba(0, 210, 252, 0.20) !important; }
+      [data-theme="blue"] .bg-\\[\\#5adc6a\\]\\/\\[0\\.06\\]:not([data-theme-ignore="true"]) { background-color: rgba(0, 210, 252, 0.06) !important; }
+      [data-theme="blue"] .bg-\\[\\#00843D\\]\\/10:not([data-theme-ignore="true"]) { background-color: rgba(2, 82, 156, 0.1) !important; }
+      [data-theme="blue"] .bg-\\[\\#00843D\\]\\/30:not([data-theme-ignore="true"]) { background-color: rgba(2, 82, 156, 0.3) !important; }
+      [data-theme="blue"] .hover\\:bg-green-800:not([data-theme-ignore="true"]):hover { background-color: #01417D !important; }
+      [data-theme="blue"] .hover\\:bg-green-950\\/20:not([data-theme-ignore="true"]):hover { background-color: rgba(10, 25, 49, 0.2) !important; }
+
+      /* Text overrides */
+      [data-theme="blue"] .text-\\[\\#00843D\\]:not([data-theme-ignore="true"]):not(.status-label-ignore) { color: #02529C !important; }
+      [data-theme="blue"] .text-\\[\\#006B32\\]:not([data-theme-ignore="true"]) { color: #01417D !important; }
+      [data-theme="blue"] .text-\\[\\#5adc6a\\]:not([data-theme-ignore="true"]) { color: #00D2FC !important; }
+      [data-theme="blue"] .text-\\[\\#5adc6a\\]\\/\\[0\\.02\\]:not([data-theme-ignore="true"]) { color: rgba(0, 210, 252, 0.02) !important; }
+      [data-theme="blue"] .text-\\[\\#6ef27f\\]:not([data-theme-ignore="true"]) { color: #38BDF8 !important; }
+
+      /* Gradients */
+      [data-theme="blue"] .from-\\[\\#011a0c\\] {
+        --tw-gradient-from: #040d21 !important;
+        --tw-gradient-to: rgba(4, 13, 33, 0) !important;
+        --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+      }
+      [data-theme="blue"] .via-\\[\\#05160d\\] {
+        --tw-gradient-to: rgba(5, 14, 30, 0) !important;
+        --tw-gradient-stops: var(--tw-gradient-from), #050e1e !important, var(--tw-gradient-to) !important;
+      }
+      [data-theme="blue"] .to-\\[\\#010905\\] {
+        --tw-gradient-to: #020611 !important;
+      }
+      [data-theme="blue"] .from-\\[\\#00843D\\] {
+        --tw-gradient-from: #02529C !important;
+      }
+      [data-theme="blue"] .to-\\[\\#006B32\\] {
+        --tw-gradient-to: #01417D !important;
+      }
+      [data-theme="blue"] .from-\\[\\#003B1A\\] {
+        --tw-gradient-from: #081a3e !important;
+      }
+      [data-theme="blue"] .via-\\[\\#004D22\\] {
+        --tw-gradient-to: rgba(8, 30, 70, 0) !important;
+        --tw-gradient-stops: var(--tw-gradient-from), #0d2757 !important, var(--tw-gradient-to) !important;
+      }
+      [data-theme="blue"] .to-\\[\\#0d1e15\\] {
+        --tw-gradient-to: #041026 !important;
+      }
+
+      /* Borders and shadows */
+      [data-theme="blue"] .border-\\[\\#00843D\\]:not([data-theme-ignore="true"]) { border-color: #02529C !important; }
+      [data-theme="blue"] .border-\\[\\#5adc6a\\]:not([data-theme-ignore="true"]) { border-color: #00D2FC !important; }
+      [data-theme="blue"] .focus\\:border-\\[\\#5adc6a\\]:not([data-theme-ignore="true"]):focus { border-color: #00D2FC !important; }
+      [data-theme="blue"] .hover\\:border-\\[\\#5adc6a\\]\\/30:not([data-theme-ignore="true"]):hover { border-color: rgba(0, 210, 252, 0.3) !important; }
+      [data-theme="blue"] .shadow-green-900\\/10:not([data-theme-ignore="true"]) { --tw-shadow-color: rgba(2, 40, 90, 0.1) !important; }
+      [data-theme="blue"] .focus\\:ring-\\[\\#5adc6a\\]\\/20:not([data-theme-ignore="true"]):focus { --tw-ring-color: rgba(0, 210, 252, 0.20) !important; }
+
+      /* SVG override restricted ONLY to sidebar and login screen to protect charts */
+      [data-theme="blue"] aside svg [fill="#00843D"] { fill: #02529C !important; }
+      [data-theme="blue"] aside svg [stroke="#00843D"] { stroke: #02529C !important; }
+      [data-theme="blue"] aside svg [fill="#006B32"] { fill: #01417D !important; }
+      [data-theme="blue"] aside svg [stroke="#006B32"] { stroke: #01417D !important; }
+      [data-theme="blue"] aside svg [fill="#5adc6a"] { fill: #00D2FC !important; }
+      [data-theme="blue"] aside svg [stroke="#5adc6a"] { stroke: #00D2FC !important; }
+      [data-theme="blue"] aside svg path[stroke="#00843D"] { stroke: #02529C !important; }
+      [data-theme="blue"] aside svg path[stroke="#5adc6a"] { stroke: #00D2FC !important; }
+      [data-theme="blue"] aside svg circle[fill="#5adc6a"] { fill: #00D2FC !important; }
+
+      [data-theme="blue"] #login-container svg [fill="#00843D"] { fill: #02529C !important; }
+      [data-theme="blue"] #login-container svg [stroke="#00843D"] { stroke: #02529C !important; }
+      [data-theme="blue"] #login-container svg [fill="#006B32"] { fill: #01417D !important; }
+      [data-theme="blue"] #login-container svg [stroke="#006B32"] { stroke: #01417D !important; }
+      [data-theme="blue"] #login-container svg [fill="#5adc6a"] { fill: #00D2FC !important; }
+      [data-theme="blue"] #login-container svg [stroke="#5adc6a"] { stroke: #00D2FC !important; }
+      [data-theme="blue"] #login-container svg path[stroke="#5adc6a"] { stroke: #00D2FC !important; }
+      [data-theme="blue"] #login-container svg circle[fill="#5adc6a"] { fill: #00D2FC !important; }
+
+      /* Sidebar */
+      [data-theme="blue"] aside.bg-\\[\\#00843D\\] { background-color: #02488a !important; }
+      [data-theme="blue"] aside .bg-\\[\\#5adc6a\\] { background-color: #00D2FC !important; color: #012040 !important; }
+      [data-theme="blue"] aside .text-\\[\\#004d22\\] { color: #012040 !important; }
+
+      /* ================= BLUE THEME DARK MODE ACCESSIBILITY ================= */
+      .dark [data-theme="blue"] .text-\\[\\#00843D\\]:not([data-theme-ignore="true"]):not(.status-label-ignore),
+      .dark[data-theme="blue"] .text-\\[\\#00843D\\]:not([data-theme-ignore="true"]):not(.status-label-ignore) {
+        color: #38BDF8 !important;
+      }
+      .dark [data-theme="blue"] .text-\\[\\#006B32\\]:not([data-theme-ignore="true"]),
+      .dark[data-theme="blue"] .text-\\[\\#006B32\\]:not([data-theme-ignore="true"]) {
+        color: #00D2FC !important;
+      }
+      .dark [data-theme="blue"] .bg-white,
+      .dark[data-theme="blue"] .bg-white {
+        background-color: #111827 !important;
+        border-color: #1f2937 !important;
+      }
+      .dark [data-theme="blue"] .border-gray-100,
+      .dark[data-theme="blue"] .border-gray-100 {
+        border-color: #1f2937 !important;
+      }
+    `}</style>
+  );
+
   if (!isLoggedIn) {
-    return <LoginScreen onLoginSuccess={() => setIsLoggedIn(true)} />;
+    return (
+      <div data-theme={theme} className="contents">
+        {themeStyleBlock}
+        <LoginScreen onLoginSuccess={() => setIsLoggedIn(true)} />
+      </div>
+    );
   }
 
   return (
-    <div className={cn("flex h-screen w-full bg-[#F3F4F6] font-sans overflow-hidden transition-colors duration-300", isDarkMode && "dark")}>
+    <div data-theme={theme} className={cn("contents", isDarkMode && "dark")}>
+      {themeStyleBlock}
+      <div className={cn("flex h-screen w-full bg-[#F3F4F6] font-sans overflow-hidden transition-colors duration-300", isDarkMode && "dark")}>
       {activeTab === 'Visão Plantio' && (
         <VisaoPlantio
           onClose={() => setActiveTab('Plantio')}
@@ -2326,10 +2478,12 @@ export default function App() {
 
       {/* SIDEBAR */}
       <aside className={cn(
-        "fixed inset-y-0 left-0 z-40 w-64 bg-[#00843D] flex flex-col shadow-2xl transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-20 shrink-0 h-full",
-        isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        "fixed inset-y-0 left-0 z-40 bg-[#00843D] flex flex-col shadow-2xl transition-all duration-300 ease-in-out lg:static lg:z-20 shrink-0 h-full overflow-hidden",
+        isSidebarCollapsed ? "w-0 lg:w-0 -translate-x-full lg:translate-x-0 opacity-0 pointer-events-none" : "w-64 lg:w-64 translate-x-0 opacity-100",
+        isMobileSidebarOpen ? "translate-x-0 animate-none" : "-translate-x-full lg:translate-x-0"
       )}>
-        <div className="pt-12 pb-10 flex flex-col items-center justify-center border-b border-white/10 relative">
+        <div className="w-64 flex flex-col h-full shrink-0">
+          <div className="pt-12 pb-10 flex flex-col items-center justify-center border-b border-white/10 relative">
           {/* Close button on mobile */}
           <button 
             onClick={() => setIsMobileSidebarOpen(false)}
@@ -2388,49 +2542,44 @@ export default function App() {
           ))}
         </nav>
 
-        {/* CONTROLE MODO ESCURO ARRASTÁVEL ABAIXO DO COAZITO */}
-        <div className="p-4 border-t border-white/10 flex flex-col items-center gap-2 shrink-0 bg-black/10">
-          <span className="text-[10px] font-black text-white/70 uppercase tracking-widest">
-            {isDarkMode ? "Modo Escuro Ativo" : "Modo Claro Ativo"}
-          </span>
-          <div 
-            ref={sliderTrackRef}
-            className="w-32 h-9 rounded-full bg-black/20 relative cursor-pointer border border-white/10 overflow-hidden flex items-center p-0.5 select-none"
-            onPointerDown={handleTrackPointerDown}
-            title="Arraste para alternar o tema"
+        {/* MINIMIZED THEME CONTROL FOOTER */}
+        <div className="p-3 border-t border-white/15 flex items-center justify-between shrink-0 bg-black/10 gap-2 select-none">
+          {/* Dark Mode toggle - compact premium click button */}
+          <button
+            onClick={() => setIsDarkMode(!isDarkMode)}
+            className={cn(
+              "p-2 rounded-xl transition-all duration-200 text-white/70 hover:text-white hover:bg-white/10 flex items-center justify-center shrink-0",
+              isDarkMode && "bg-white/5 text-yellow-400 hover:text-yellow-300"
+            )}
+            title={isDarkMode ? "Modo Claro" : "Modo Escuro"}
           >
-            {/* Soft background glow depending on theme */}
-            <div 
-              className={cn(
-                "absolute inset-y-0 left-0 rounded-l-full transition-all duration-300", 
-                isDarkMode ? "bg-emerald-500/25 w-full" : "bg-white/10"
-              )} 
-              style={!isDarkMode ? { width: `${dragX + 16}px` } : undefined} 
-            />
-            
-            {/* Background Labels */}
-            <span className="absolute left-3 text-[8px] font-black uppercase text-white/40 pointer-events-none select-none">CLARO</span>
-            <span className="absolute right-3 text-[8px] font-black uppercase text-white/40 pointer-events-none select-none">ESCURO</span>
-            
-            {/* Draggable Knob */}
-            <div
-              className={cn(
-                "w-8 h-8 rounded-full shadow-lg flex items-center justify-center cursor-grab active:cursor-grabbing transition-all select-none z-10",
-                isDarkMode ? "bg-gray-900 text-yellow-400" : "bg-white text-yellow-600"
-              )}
-              style={{
-                transform: `translateX(${dragX}px)`,
-                touchAction: 'none',
-                transition: isDragging ? 'none' : 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)'
-              }}
-              onPointerDown={handleKnobPointerDown}
-            >
-              {isDarkMode ? (
-                <Moon size={14} fill="currentColor" />
-              ) : (
-                <Sun size={14} fill="currentColor" />
-              )}
-            </div>
+            {isDarkMode ? <Sun size={15} /> : <Moon size={15} />}
+          </button>
+
+          <div className="h-4 w-px bg-white/10" />
+
+          {/* Color Palette selectors - small premium glowing dots */}
+          <div className="flex items-center gap-2 bg-black/20 px-2.5 py-1.5 rounded-full border border-white/5">
+            {(['green', 'blue'] as const).map((t) => {
+              const isActive = theme === t;
+              const colorHex = t === 'green' ? '#5adc6a' : '#00D2FC';
+              return (
+                <button
+                  key={t}
+                  onClick={() => setTheme(t)}
+                  className={cn(
+                    "w-4.5 h-4.5 rounded-full transition-all duration-300 relative flex items-center justify-center border border-white/10",
+                    isActive ? "ring-2 ring-white scale-110 shadow-lg shadow-black/40" : "opacity-60 hover:opacity-100 hover:scale-105"
+                  )}
+                  title={t === 'green' ? 'Tema Verde' : 'Tema Azul'}
+                >
+                  <span 
+                    className="w-2.5 h-2.5 rounded-full" 
+                    style={{ backgroundColor: colorHex }} 
+                  />
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -2449,7 +2598,27 @@ export default function App() {
             Encerrar Sessão
           </button>
         </div>
+        </div>
       </aside>
+
+      {/* Sleek Sidebar Toggle Arrow Button for Desktop */}
+      <button
+        onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+        className={cn(
+          "hidden lg:flex fixed top-1/2 -translate-y-1/2 z-30 items-center justify-center w-5 h-14 bg-[#00843D] text-white hover:bg-[#006B32] border border-white/20 rounded-r-2xl shadow-2xl transition-all duration-300 hover:scale-y-110 cursor-pointer",
+          isSidebarCollapsed ? "left-0" : "left-64"
+        )}
+        style={{
+          boxShadow: "4px 0 16px rgba(0,0,0,0.12)",
+        }}
+        title={isSidebarCollapsed ? "Expandir Menu" : "Recolher Menu"}
+      >
+        {isSidebarCollapsed ? (
+          <ChevronRight size={13} className="animate-pulse" />
+        ) : (
+          <ChevronLeft size={13} />
+        )}
+      </button>
 
       {/* MAIN CONTENT */}
       <main className="flex-1 flex flex-col overflow-hidden w-full">
@@ -2875,14 +3044,18 @@ export default function App() {
                         f.status === 'Parada' ? "border-red-100 bg-red-50" :
                         "border-blue-100 bg-blue-50"
                       )}
+                      data-theme-ignore={f.status === 'Trabalhando' ? "true" : undefined}
                     >
                       <div className="flex justify-between items-start">
-                        <h4 className={cn(
-                          "font-black",
-                          f.status === 'Trabalhando' ? "text-[#00843D]" :
-                          f.status === 'Parada' ? "text-red-700" :
-                          "text-blue-700"
-                        )}>{f.frente} - {f.nome}</h4>
+                        <h4 
+                          className={cn(
+                            "font-black",
+                            f.status === 'Trabalhando' ? "text-[#00843D]" :
+                            f.status === 'Parada' ? "text-red-700" :
+                            "text-blue-700"
+                          )}
+                          data-theme-ignore={f.status === 'Trabalhando' ? "true" : undefined}
+                        >{f.frente} - {f.nome}</h4>
                         <div className="flex flex-col items-end gap-1">
                           <span className={cn(
                             "text-white text-[9px] px-2 py-0.5 rounded-full font-black uppercase",
@@ -2918,11 +3091,19 @@ export default function App() {
                       </div>
                       <div className="mt-3 text-xs space-y-1 font-semibold text-gray-600">
                         <p className="flex items-center gap-1">
-                          <MapPin size={12} className={f.status === 'Trabalhando' ? "text-[#00843D]" : f.status === 'Parada' ? "text-red-700" : "text-blue-700"} /> 
+                          <MapPin 
+                            size={12} 
+                            className={f.status === 'Trabalhando' ? "text-[#00843D]" : f.status === 'Parada' ? "text-red-700" : "text-blue-700"} 
+                            data-theme-ignore={f.status === 'Trabalhando' ? "true" : undefined}
+                          /> 
                           {f.fazenda}
                         </p>
                         <p className="flex items-center gap-1">
-                          <Users size={12} className={f.status === 'Trabalhando' ? "text-[#00843D]" : f.status === 'Parada' ? "text-red-700" : "text-blue-700"} /> 
+                          <Users 
+                            size={12} 
+                            className={f.status === 'Trabalhando' ? "text-[#00843D]" : f.status === 'Parada' ? "text-red-700" : "text-blue-700"} 
+                            data-theme-ignore={f.status === 'Trabalhando' ? "true" : undefined}
+                          /> 
                           Gestor: {f.gestor}
                         </p>
                         <p className="flex items-center gap-1 text-[10px] mt-2 font-bold opacity-60"><Clock size={10} /> {f.updatedAt || lastGlobalUpdate}</p>
@@ -4933,6 +5114,7 @@ export default function App() {
                     "bg-white p-4 sm:p-6 lg:p-8 rounded-[24px] sm:rounded-[32px] shadow-sm border-b-8 border-[#00843D] relative overflow-hidden group hover:translate-y-[-8px] hover:border-b-[#5adc6a] hover:ring-2 hover:ring-[#5adc6a]/25 hover:shadow-lg hover:shadow-[#5adc6a]/15 transition-all cursor-pointer flex flex-col items-center justify-center text-center hover:shadow-xl active:scale-95",
                     filterStatus && filterStatus !== 'Trabalhando' && "opacity-40 grayscale"
                   )}
+                  data-theme-ignore="true"
                 >
                   <p className="text-[10px] sm:text-xs font-black text-gray-400 uppercase tracking-[0.2em] bg-gray-50 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full inline-block mb-2 sm:mb-4">Frentes Trabalhando</p>
                   <p className="text-5xl sm:text-6xl lg:text-7xl font-black text-[#1F2937] leading-none tracking-tighter">{currentData.trabalhando}</p>
@@ -6653,12 +6835,15 @@ export default function App() {
                     <div className="space-y-8">
                       <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
                         <div>
-                          <h2 className={cn(
-                            "text-3xl sm:text-6xl font-black uppercase tracking-tighter leading-none mb-4",
-                            f.status === 'Trabalhando' ? "text-[#00843D]" :
-                            f.status === 'Parada' ? "text-red-700" :
-                            "text-blue-700"
-                          )}>
+                          <h2 
+                            className={cn(
+                              "text-3xl sm:text-6xl font-black uppercase tracking-tighter leading-none mb-4",
+                              f.status === 'Trabalhando' ? "text-[#00843D]" :
+                              f.status === 'Parada' ? "text-red-700" :
+                              "text-blue-700"
+                            )}
+                            data-theme-ignore={f.status === 'Trabalhando' ? "true" : undefined}
+                          >
                             {f.frente}
                           </h2>
                           <p className="text-lg sm:text-2xl font-bold text-gray-400 uppercase tracking-[0.2em]">
@@ -6840,7 +7025,7 @@ export default function App() {
                         <div className="text-left sm:text-right">
                           <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Eficiência Diária</p>
                           <div className="px-6 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-2xl">
-                             <span className="text-2xl sm:text-4xl font-black text-[#00843D] dark:text-green-400">{itemEfficiency}%</span>
+                             <span className="text-2xl sm:text-4xl font-black text-[#00843D] status-label-ignore dark:text-green-400">{itemEfficiency}%</span>
                           </div>
                         </div>
                       </div>
@@ -7199,7 +7384,7 @@ export default function App() {
                                   );
                                 })}
                                 <div className="absolute bg-white dark:bg-slate-800 rounded-full w-24 h-24 sm:w-40 sm:h-40 shadow-2xl flex flex-col items-center justify-center border-4 sm:border-8 border-gray-50 dark:border-slate-700" style={{ transform: 'translateZ(45px)' }}>
-                                   <p className="text-2xl sm:text-4xl font-black text-[#00843D] dark:text-green-400">{calculateUsinaEfficiency(selectedUsina)}%</p>
+                                   <p className="text-2xl sm:text-4xl font-black text-[#00843D] status-label-ignore dark:text-green-400">{calculateUsinaEfficiency(selectedUsina)}%</p>
                                 </div>
                               </motion.div>
                            </div>
@@ -7349,6 +7534,7 @@ export default function App() {
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 }

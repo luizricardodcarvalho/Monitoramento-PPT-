@@ -177,16 +177,21 @@
 }
 
 /* Keep primary brand green elements vibrant and recognizable */
-.dark .bg-\[\#00843D\], 
-.dark .bg-\[\#006B32\],
-.dark .bg-emerald-700 {
+:not([data-theme="blue"]).dark .bg-\[\#00843D\], 
+:not([data-theme="blue"]).dark .bg-\[\#006B32\],
+:not([data-theme="blue"]).dark .bg-emerald-700,
+[data-theme="green"].dark .bg-\[\#00843D\], 
+[data-theme="green"].dark .bg-\[\#006B32\],
+[data-theme="green"].dark .bg-emerald-700 {
   background-color: #00843d !important;
   color: #ffffff !important;
 }
 
 /* Glowy green for headings and accents in dark mode */
-.dark .text-\[\#006B32\],
-.dark .text-\[\#00843D\] {
+:not([data-theme="blue"]).dark .text-\[\#006B32\],
+:not([data-theme="blue"]).dark .text-\[\#00843D\],
+[data-theme="green"].dark .text-\[\#006B32\],
+[data-theme="green"].dark .text-\[\#00843D\] {
   color: #5adc6a !important; 
 }
 
