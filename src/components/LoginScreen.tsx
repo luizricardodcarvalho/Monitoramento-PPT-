@@ -55,9 +55,12 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
     <div id="login-container" className="min-h-screen w-full bg-gradient-to-br from-[#011a0c] via-[#05160d] to-[#010905] flex items-center justify-center p-4 relative overflow-hidden font-sans select-none">
       
       {/* High-fidelity glowing orbs in the background */}
-      <div className="absolute top-[-15%] left-[-15%] w-[60%] h-[60%] bg-[#00843D]/30 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-[-15%] right-[-15%] w-[60%] h-[60%] bg-[#5adc6a]/15 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute top-[30%] left-[30%] w-[40%] h-[40%] bg-[#00843D]/10 rounded-full blur-[160px] pointer-events-none" />
+      <div className="absolute top-[-15%] left-[-15%] w-[60%] h-[60%] bg-[#00843D]/30 rounded-full blur-[180px] pointer-events-none" />
+      <div className="absolute bottom-[-15%] right-[-15%] w-[60%] h-[60%] bg-[#5adc6a]/15 rounded-full blur-[180px] pointer-events-none" />
+      <div className="absolute top-[30%] left-[30%] w-[40%] h-[40%] bg-[#00843D]/10 rounded-full blur-[200px] pointer-events-none" />
+      
+      {/* Diffuse and wide subtle glowing backplate behind the login card for deep atmosphere */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[85%] h-[85%] max-w-[800px] bg-[#5adc6a]/[0.06] rounded-full blur-[220px] pointer-events-none" />
       
       {/* High tech abstract subtle grid pattern (double grid for extra depth) */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none" />
@@ -128,23 +131,23 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
           damping: 20,
           duration: 0.6
         }}
-        className="w-full max-w-[530px] relative z-10"
+        className="w-full max-w-[590px] relative z-10"
       >
-        {/* Main Card - Enlarged by 20% for extreme readibility and premium balance */}
-        <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/10 rounded-[42px] p-10 sm:p-14 shadow-[0_35px_60px_-15px_rgba(0,0,0,0.8)] relative overflow-hidden transition-all duration-300">
+        {/* Main Card - Expanded and visually amplified for supreme high-end feel */}
+        <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/10 rounded-[48px] p-12 sm:p-16 shadow-[0_35px_60px_-15px_rgba(0,0,0,0.85)] relative overflow-hidden transition-all duration-300">
           
           {/* Inner ambient glow highlight at top */}
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-white/25 to-transparent" />
           
           <div className="flex flex-col items-center mb-10">
-            {/* Elegant Brand Logo Container */}
+            {/* Elegant Brand Logo Container (Enlarged by 15%) */}
             <motion.div 
               initial={{ scale: 0.85, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.15, duration: 0.6, type: "spring" }}
-              className="w-40 h-32 bg-white/5 rounded-[32px] p-4 flex items-center justify-center mb-6 border border-white/15 shadow-inner hover:border-white/25 transition-colors duration-300"
+              className="w-48 h-36 bg-white/5 rounded-[36px] p-5 flex items-center justify-center mb-7 border border-white/15 shadow-inner hover:border-[#5adc6a]/30 hover:bg-white/[0.07] transition-all duration-300"
             >
-              <ColomboLogo className="w-full h-full text-white filter drop-shadow-[0_4px_10px_rgba(255,255,255,0.05)]" />
+              <ColomboLogo className="w-full h-full text-white filter drop-shadow-[0_4px_12px_rgba(255,255,255,0.06)]" />
             </motion.div>
 
             {/* Title and subtitle */}
@@ -154,10 +157,10 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
               transition={{ delay: 0.25, duration: 0.5 }}
               className="text-center"
             >
-              <h2 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-wider">
+              <h2 className="text-3xl font-black text-white uppercase tracking-wider">
                 Portal de Monitoramento
               </h2>
-              <p className="text-[#6ef27f] text-xs font-black uppercase tracking-[0.25em] mt-2.5 filter drop-shadow-[0_0_10px_rgba(90,220,106,0.25)]">
+              <p className="text-[#6ef27f] text-sm font-black uppercase tracking-[0.25em] mt-3 filter drop-shadow-[0_0_12px_rgba(90,220,106,0.3)]">
                 Conectividade &amp; Telemetria Avançada
               </p>
             </motion.div>
@@ -168,7 +171,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
               <motion.form 
                 key="login-form"
                 onSubmit={handleSubmit}
-                className="space-y-6"
+                className="space-y-7"
                 initial={{ opacity: 1 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
@@ -180,53 +183,53 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
                     animate={{ opacity: 1, y: 0 }}
                     className="p-5 bg-red-500/10 border border-red-500/30 rounded-2xl flex items-start gap-4"
                   >
-                    <ShieldAlert className="text-red-400 shrink-0 mt-0.5" size={18} />
-                    <p className="text-xs sm:text-sm text-red-200 font-bold leading-relaxed uppercase">{error}</p>
+                    <ShieldAlert className="text-red-400 shrink-0 mt-0.5" size={20} />
+                    <p className="text-sm text-red-200 font-bold leading-relaxed uppercase">{error}</p>
                   </motion.div>
                 )}
 
                 {/* Input Username */}
-                <div className="space-y-2.5">
-                  <label className="block text-xs sm:text-[13px] font-black text-white/90 uppercase tracking-widest pl-1">
-                    Identificação de Usuário
+                <div className="space-y-3">
+                  <label className="block text-sm font-black text-white uppercase tracking-widest pl-1">
+                    Usuário
                   </label>
                   <div className="relative flex items-center">
-                    <User className="absolute left-5 text-gray-400/90" size={18} />
+                    <User className="absolute left-6 text-gray-300" size={20} />
                     <input
                       type="text"
                       disabled={isLoading}
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
-                      placeholder="Nome do operador"
-                      className="w-full bg-white/[0.04] border border-white/10 focus:border-[#5adc6a] focus:bg-white/[0.08] focus:ring-2 focus:ring-[#5adc6a]/20 text-white text-sm font-bold pl-14 pr-5 py-4.5 rounded-2xl outline-none transition-all placeholder:text-gray-400/80"
+                      placeholder="Usuário"
+                      className="w-full bg-white/[0.04] border border-white/10 focus:border-[#5adc6a] focus:bg-white/[0.08] focus:ring-2 focus:ring-[#5adc6a]/20 text-white text-base font-bold pl-16 pr-6 py-5 rounded-2xl outline-none transition-all placeholder:text-gray-300"
                     />
                   </div>
                 </div>
 
                 {/* Input Password */}
-                <div className="space-y-2.5">
+                <div className="space-y-3">
                   <div className="flex justify-between items-center pl-1">
-                    <label className="text-xs sm:text-[13px] font-black text-white/90 uppercase tracking-widest">
+                    <label className="text-sm font-black text-white uppercase tracking-widest">
                       Chave de Segurança
                     </label>
                   </div>
                   <div className="relative flex items-center">
-                    <Lock className="absolute left-5 text-gray-400/90" size={18} />
+                    <Lock className="absolute left-6 text-gray-300" size={20} />
                     <input
                       type={showPassword ? "text" : "password"}
                       disabled={isLoading}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Senha do sistema"
-                      className="w-full bg-white/[0.04] border border-white/10 focus:border-[#5adc6a] focus:bg-white/[0.08] focus:ring-2 focus:ring-[#5adc6a]/20 text-white text-sm font-bold pl-14 pr-14 py-4.5 rounded-2xl outline-none transition-all placeholder:text-gray-400/80"
+                      className="w-full bg-white/[0.04] border border-white/10 focus:border-[#5adc6a] focus:bg-white/[0.08] focus:ring-2 focus:ring-[#5adc6a]/20 text-white text-base font-bold pl-16 pr-16 py-5 rounded-2xl outline-none transition-all placeholder:text-gray-300"
                     />
                     <button
                       type="button"
                       tabIndex={-1}
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-5 text-gray-400 hover:text-[#5adc6a] hover:scale-110 active:scale-95 transition-all p-1"
+                      className="absolute right-6 text-gray-400 hover:text-[#5adc6a] hover:scale-110 active:scale-95 transition-all p-1"
                     >
-                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                      {showPassword ? <EyeOff size={22} /> : <Eye size={22} />}
                     </button>
                   </div>
                 </div>
@@ -237,7 +240,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
                   whileTap={{ scale: 0.985 }}
                   type="submit"
                   disabled={isLoading}
-                  className="w-full h-[60px] bg-gradient-to-r from-[#00843D] to-[#006B32] hover:from-[#5adc6a] hover:to-[#00843D] text-white font-black text-sm uppercase tracking-widest rounded-2xl shadow-2xl shadow-green-950/40 hover:shadow-[0_0_30px_rgba(90,220,106,0.35)] hover:border-[#5adc6a]/40 border border-transparent transition-all duration-300 flex items-center justify-center gap-3 cursor-pointer disabled:opacity-50 disabled:pointer-events-none mt-4 group"
+                  className="w-full h-[64px] bg-gradient-to-r from-[#00843D] to-[#006B32] hover:from-[#5adc6a] hover:to-[#22c55e] text-white font-black text-base uppercase tracking-widest rounded-2xl shadow-2xl shadow-green-950/40 hover:shadow-[0_0_35px_rgba(90,220,106,0.45)] hover:border-[#7cfc90]/40 border border-transparent transition-all duration-300 flex items-center justify-center gap-3 cursor-pointer disabled:opacity-50 disabled:pointer-events-none mt-5 group"
                 >
                   {isLoading ? (
                     <div className="flex items-center gap-3">
@@ -250,22 +253,22 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
                   ) : (
                     <>
                       <span>Acessar Sistema</span>
-                      <ArrowRight size={18} className="transition-transform group-hover:translate-x-1.5" />
+                      <ArrowRight size={20} className="transition-transform group-hover:translate-x-2" />
                     </>
                   )}
                 </motion.button>
 
                 {/* Demo credentials helper (Professional layout) */}
                 <div className="pt-8 border-t border-white/5 flex flex-col items-center">
-                  <p className="text-[10px] sm:text-xs font-black text-white/50 uppercase tracking-widest mb-3.5">
+                  <p className="text-xs font-black text-white/85 uppercase tracking-widest mb-4">
                     Centro de Operações Agrícola
                   </p>
                   <button
                     type="button"
                     onClick={fillDefaultCredentials}
-                    className="px-5 py-3 bg-white/[0.02] hover:bg-white/[0.07] border border-white/5 hover:border-white/10 rounded-2xl text-[11px] sm:text-xs font-black text-white/90 uppercase tracking-wider flex items-center gap-2.5 transition-all cursor-pointer shadow-sm"
+                    className="px-6 py-3.5 bg-white/[0.02] hover:bg-white/[0.08] border border-white/5 hover:border-[#5adc6a]/20 rounded-2xl text-xs font-black text-white/90 uppercase tracking-wider flex items-center gap-2.5 transition-all cursor-pointer shadow-sm"
                   >
-                    <CheckCircle2 size={14} className="text-[#5adc6a]" />
+                    <CheckCircle2 size={16} className="text-[#5adc6a]" />
                     Preencher Credenciais Padrão
                   </button>
                 </div>
@@ -294,7 +297,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
                 </div>
                 <div className="space-y-2">
                   <h3 className="text-white font-black uppercase text-lg tracking-wider">Acesso Permitido</h3>
-                  <p className="text-[#5adc6a] font-bold uppercase text-[10px] sm:text-xs tracking-widest">Iniciando sessão do operador Eder</p>
+                  <p className="text-[#5adc6a] font-bold uppercase text-xs tracking-widest">Iniciando sessão do operador Eder</p>
                 </div>
               </motion.div>
             )}
@@ -302,9 +305,9 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
         </div>
 
         {/* Footer info under card - Enhanced contrast and size for Full HD screens */}
-        <div className="text-center mt-8 text-xs font-bold text-white/60 uppercase tracking-[0.25em] space-y-2">
-          <p className="font-extrabold text-white/80">© {new Date().getFullYear()} Colombo Agroindústria S/A</p>
-          <p className="text-[10px] text-white/45 font-semibold">Conectividade &amp; Telemetria Avançada • Todos os direitos reservados</p>
+        <div className="text-center mt-10 text-[13px] font-bold text-white/85 uppercase tracking-[0.25em] space-y-2">
+          <p className="font-extrabold text-white">© {new Date().getFullYear()} Colombo Agroindústria S/A</p>
+          <p className="text-xs text-white/65 font-semibold">Conectividade &amp; Telemetria Avançada • Todos os direitos reservados</p>
         </div>
       </motion.div>
     </div>
