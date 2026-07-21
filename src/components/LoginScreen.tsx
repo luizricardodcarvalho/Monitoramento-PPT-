@@ -5,9 +5,11 @@ import { ColomboLogo } from './Logos';
 
 interface LoginScreenProps {
   onLoginSuccess: () => void;
+  theme: 'green' | 'blue';
+  setTheme: (theme: 'green' | 'blue') => void;
 }
 
-export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
+export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess, theme, setTheme }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -47,6 +49,34 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
 
   return (
     <div id="login-container" className="min-h-screen w-full bg-gradient-to-br from-[#011a0c] via-[#05160d] to-[#010905] flex items-center justify-center p-4 relative overflow-hidden font-sans select-none">
+      
+      {/* Theme Selector Floating Panel */}
+      <div className="absolute top-6 right-6 z-50 bg-white/5 backdrop-blur-md border border-white/10 rounded-full p-1 flex items-center shadow-lg">
+        <button
+          type="button"
+          onClick={() => setTheme('green')}
+          className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+            theme === 'green'
+              ? 'bg-gradient-to-r from-[#00843D] to-[#006B32] text-white shadow-md'
+              : 'text-gray-300 hover:text-white hover:bg-white/5'
+          }`}
+        >
+          <span className="w-2.5 h-2.5 rounded-full bg-[#5adc6a]" />
+          Verde
+        </button>
+        <button
+          type="button"
+          onClick={() => setTheme('blue')}
+          className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+            theme === 'blue'
+              ? 'bg-gradient-to-r from-[#02529C] to-[#01417D] text-white shadow-md'
+              : 'text-gray-300 hover:text-white hover:bg-white/5'
+          }`}
+        >
+          <span className="w-2.5 h-2.5 rounded-full bg-[#00D2FC]" />
+          Azul
+        </button>
+      </div>
       
       {/* High-fidelity glowing orbs in the background */}
       <div className="absolute top-[-15%] left-[-15%] w-[60%] h-[60%] bg-[#00843D]/30 rounded-full blur-[180px] pointer-events-none" />

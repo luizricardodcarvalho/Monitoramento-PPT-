@@ -2611,7 +2611,11 @@ export default function App() {
     return (
       <div data-theme={theme} className="contents">
         {themeStyleBlock}
-        <LoginScreen onLoginSuccess={() => setIsLoggedIn(true)} />
+        <LoginScreen 
+          onLoginSuccess={() => setIsLoggedIn(true)} 
+          theme={theme}
+          setTheme={setTheme}
+        />
       </div>
     );
   }
