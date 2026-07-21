@@ -716,15 +716,15 @@ export default function Pluviometria({ isDarkMode = false }: { isDarkMode?: bool
           {/* Usina selection buttons (ARI, PAL, STA) */}
           <div className="flex items-center justify-between sm:justify-start gap-2">
             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Unidade:</span>
-            <div className="bg-gray-100 p-1 rounded-2xl border border-gray-200/50 flex gap-1">
+            <div className="bg-gray-100 dark:bg-gray-900 p-1 rounded-2xl border border-gray-200/50 dark:border-gray-800/50 flex gap-1">
               {(['ARIRANHA', 'PALESTINA', 'SANTA ALBERTINA'] as const).map((usina) => (
                 <button
                   key={usina}
                   onClick={() => setSelectedUsina(usina)}
                   className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-[10px] font-black tracking-wider uppercase transition-all duration-200 ${
                     selectedUsina === usina
-                      ? 'bg-gray-800 text-white shadow-sm'
-                      : 'bg-transparent text-gray-500 hover:text-gray-800 hover:bg-gray-200/40'
+                      ? 'bg-gray-800 text-white shadow-sm dark:bg-gray-200 dark:text-gray-900'
+                      : 'bg-transparent text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-100 hover:bg-gray-200/40 dark:hover:bg-gray-800/40'
                   }`}
                 >
                   {usina === 'ARIRANHA' ? 'ARI' : usina === 'PALESTINA' ? 'PAL' : 'STA'}

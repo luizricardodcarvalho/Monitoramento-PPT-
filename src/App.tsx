@@ -2391,6 +2391,130 @@ export default function App() {
       [data-theme="blue"] .to-\\[\\#0d1e15\\] {
         --tw-gradient-to: #041026 !important;
       }
+      [data-theme="blue"] .from-\\[\\#005c36\\] {
+        --tw-gradient-from: #02488a !important;
+        --tw-gradient-to: rgba(2, 72, 138, 0) !important;
+        --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+      }
+      [data-theme="blue"] .via-\\[\\#00843D\\] {
+        --tw-gradient-to: rgba(2, 82, 156, 0) !important;
+        --tw-gradient-stops: var(--tw-gradient-from), #02529C !important, var(--tw-gradient-to) !important;
+      }
+      [data-theme="blue"] .to-\\[\\#0d5335\\] {
+        --tw-gradient-to: #0c2340 !important;
+      }
+      [data-theme="blue"] .from-\\[\\#004d22\\],
+      [data-theme="blue"] .from-\\[\\#004D22\\] {
+        --tw-gradient-from: #012b54 !important;
+        --tw-gradient-to: rgba(1, 43, 84, 0) !important;
+        --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+      }
+      [data-theme="blue"] .via-\\[\\#004d22\\],
+      [data-theme="blue"] .via-\\[\\#004D22\\] {
+        --tw-gradient-to: rgba(1, 35, 68, 0) !important;
+        --tw-gradient-stops: var(--tw-gradient-from), #012b54 !important, var(--tw-gradient-to) !important;
+      }
+      [data-theme="blue"] .to-\\[\\#003818\\],
+      [data-theme="blue"] .to-\\[\\#00381A\\] {
+        --tw-gradient-to: #01152a !important;
+      }
+      [data-theme="blue"] .to-\\[\\#00843D\\],
+      [data-theme="blue"] .to-\\[\\#00843d\\] {
+        --tw-gradient-to: #02529C !important;
+      }
+      [data-theme="blue"] .from-emerald-950 {
+        --tw-gradient-from: #01152a !important;
+        --tw-gradient-to: rgba(1, 21, 42, 0) !important;
+        --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+      }
+      [data-theme="blue"] .to-emerald-900 {
+        --tw-gradient-to: #0c2340 !important;
+      }
+      [data-theme="blue"] .via-\\[\\#006e33\\],
+      [data-theme="blue"] .via-\\[\\#006E33\\] {
+        --tw-gradient-to: rgba(2, 82, 156, 0) !important;
+        --tw-gradient-stops: var(--tw-gradient-from), #02529C !important, var(--tw-gradient-to) !important;
+      }
+      [data-theme="blue"] .to-\\[\\#5adc6a\\],
+      [data-theme="blue"] .to-\\[\\#5ADC6A\\] {
+        --tw-gradient-to: #00D2FC !important;
+      }
+      [data-theme="blue"] .bg-\\[\\#edf7f2\\],
+      [data-theme="blue"] .bg-\\[\\#EDF7F2\\] {
+        background-color: rgba(0, 210, 252, 0.08) !important;
+      }
+      [data-theme="blue"] .bg-\\[\\#e2f5e5\\] {
+        background-color: rgba(0, 210, 252, 0.12) !important;
+      }
+      [data-theme="blue"] .bg-\\[\\#e2f5e5\\]\\/30 {
+        background-color: rgba(0, 210, 252, 0.04) !important;
+      }
+      [data-theme="blue"] .bg-\\[\\#e2f5e5\\]\\/40 {
+        background-color: rgba(0, 210, 252, 0.06) !important;
+      }
+      [data-theme="blue"] .bg-\\[\\#e2f5e5\\]\\/50 {
+        background-color: rgba(0, 210, 252, 0.08) !important;
+      }
+      [data-theme="blue"] .hover\\:bg-\\[\\#e2f5e5\\]:hover {
+        background-color: rgba(0, 210, 252, 0.15) !important;
+      }
+      [data-theme="blue"] .hover\\:bg-\\[\\#e2f5e5\\]\\/10:hover {
+        background-color: rgba(0, 210, 252, 0.03) !important;
+      }
+      [data-theme="blue"] .divide-\\[\\#e2f5e5\\]\\/40 > * + * {
+        border-color: rgba(0, 210, 252, 0.06) !important;
+      }
+      [data-theme="blue"] .hover\\:bg-\\[\\#4bcc5b\\]:hover {
+        background-color: #38bdf8 !important;
+      }
+      [data-theme="blue"] .shadow-\\[\\#5adc6a\\]\\/20 {
+        --tw-shadow-color: rgba(0, 210, 252, 0.20) !important;
+      }
+
+      /* Emerald overrides for blue theme */
+      [data-theme="blue"] .text-emerald-300 { color: #00D2FC !important; }
+      [data-theme="blue"] .text-emerald-400 { color: #38BDF8 !important; }
+      [data-theme="blue"] .text-emerald-500 { color: #00D2FC !important; }
+      [data-theme="blue"] .text-emerald-600 { color: #02529C !important; }
+      [data-theme="blue"] .text-emerald-700 { color: #01417D !important; }
+      [data-theme="blue"] .text-emerald-800 { color: #012040 !important; }
+      [data-theme="blue"] .text-emerald-950 { color: #090d16 !important; }
+      [data-theme="blue"] .bg-emerald-50 { background-color: rgba(0, 210, 252, 0.08) !important; }
+      [data-theme="blue"] .bg-emerald-400\\/10 { background-color: rgba(0, 210, 252, 0.1) !important; }
+      [data-theme="blue"] .bg-emerald-500\\/20 { background-color: rgba(0, 210, 252, 0.2) !important; }
+      [data-theme="blue"] .bg-emerald-700 { background-color: #02529C !important; }
+      [data-theme="blue"] .hover\\:bg-emerald-800:hover { background-color: #01417D !important; }
+      [data-theme="blue"] .bg-emerald-900\\/40 { background-color: rgba(8, 26, 62, 0.4) !important; }
+      [data-theme="blue"] .bg-emerald-950 { background-color: #041026 !important; }
+      [data-theme="blue"] .border-emerald-100 { border-color: rgba(0, 210, 252, 0.15) !important; }
+      [data-theme="blue"] .border-emerald-200 { border-color: rgba(0, 210, 252, 0.3) !important; }
+      [data-theme="blue"] .border-emerald-500\\/20 { border-color: rgba(0, 210, 252, 0.2) !important; }
+      [data-theme="blue"] .focus\\:border-emerald-400:focus { border-color: #00D2FC !important; }
+
+      /* Dark green #005B2B, #003B1C, #00381A, #00FF66 overrides for blue theme */
+      [data-theme="blue"] .bg-\\[\\#005B2B\\]:not([data-theme-ignore="true"]) { background-color: #01417D !important; }
+      [data-theme="blue"] .text-\\[\\#005B2B\\]:not([data-theme-ignore="true"]) { color: #00D2FC !important; }
+      [data-theme="blue"] .border-\\[\\#005B2B\\]:not([data-theme-ignore="true"]) { border-color: #01417D !important; }
+      [data-theme="blue"] .border-\\[\\#005B2B\\]\\/10:not([data-theme-ignore="true"]) { border-color: rgba(1, 65, 125, 0.1) !important; }
+      [data-theme="blue"] .border-\\[\\#005B2B\\]\\/20:not([data-theme-ignore="true"]) { border-color: rgba(1, 65, 125, 0.2) !important; }
+      [data-theme="blue"] .border-\\[\\#00381A\\]:not([data-theme-ignore="true"]) { border-color: #012b54 !important; }
+      [data-theme="blue"] .focus\\:ring-\\[\\#005B2B\\]:not([data-theme-ignore="true"]):focus { --tw-ring-color: #01417D !important; }
+      [data-theme="blue"] .text-\\[\\#00FF66\\]:not([data-theme-ignore="true"]) { color: #00D2FC !important; }
+
+      [data-theme="blue"] .from-\\[\\#003B1C\\] {
+        --tw-gradient-from: #081a3e !important;
+        --tw-gradient-to: rgba(8, 26, 62, 0) !important;
+        --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+      }
+      [data-theme="blue"] .via-\\[\\#005B2B\\] {
+        --tw-gradient-to: rgba(1, 65, 125, 0) !important;
+        --tw-gradient-stops: var(--tw-gradient-from), #01417D !important, var(--tw-gradient-to) !important;
+      }
+      [data-theme="blue"] .from-\\[\\#005B2B\\] {
+        --tw-gradient-from: #01417D !important;
+        --tw-gradient-to: rgba(1, 65, 125, 0) !important;
+        --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+      }
 
       /* Borders and shadows */
       [data-theme="blue"] .border-\\[\\#00843D\\]:not([data-theme-ignore="true"]) { border-color: #02529C !important; }
@@ -2440,8 +2564,45 @@ export default function App() {
         border-color: #1f2937 !important;
       }
       .dark [data-theme="blue"] .border-gray-100,
-      .dark[data-theme="blue"] .border-gray-100 {
+      .dark[data-theme="blue"] .border-gray-100,
+      .dark [data-theme="blue"] .border-gray-200,
+      .dark[data-theme="blue"] .border-gray-200,
+      .dark [data-theme="blue"] .border-gray-250,
+      .dark[data-theme="blue"] .border-gray-250,
+      .dark [data-theme="blue"] .border-gray-350,
+      .dark[data-theme="blue"] .border-gray-350 {
         border-color: #1f2937 !important;
+      }
+      .dark [data-theme="blue"] .bg-gray-50,
+      .dark[data-theme="blue"] .bg-gray-50,
+      .dark [data-theme="blue"] .bg-slate-50,
+      .dark[data-theme="blue"] .bg-slate-50,
+      .dark [data-theme="blue"] .bg-zinc-50,
+      .dark[data-theme="blue"] .bg-zinc-50 {
+        background-color: #0b0f19 !important;
+        border-color: #1e293b !important;
+      }
+      .dark [data-theme="blue"] .bg-gray-100,
+      .dark[data-theme="blue"] .bg-gray-100,
+      .dark [data-theme="blue"] .bg-slate-100,
+      .dark[data-theme="blue"] .bg-slate-100,
+      .dark [data-theme="blue"] .bg-zinc-100,
+      .dark[data-theme="blue"] .bg-zinc-100 {
+        background-color: #111827 !important;
+        border-color: #1f2937 !important;
+      }
+      .dark [data-theme="blue"] .bg-gray-150,
+      .dark[data-theme="blue"] .bg-gray-150,
+      .dark [data-theme="blue"] .bg-gray-200,
+      .dark[data-theme="blue"] .bg-gray-200,
+      .dark [data-theme="blue"] .bg-gray-250,
+      .dark[data-theme="blue"] .bg-gray-250,
+      .dark [data-theme="blue"] .bg-slate-200,
+      .dark[data-theme="blue"] .bg-slate-200,
+      .dark [data-theme="blue"] .bg-zinc-200,
+      .dark[data-theme="blue"] .bg-zinc-200 {
+        background-color: #1f2937 !important;
+        border-color: #374151 !important;
       }
     `}</style>
   );
@@ -3215,72 +3376,115 @@ export default function App() {
               {/* HIGHLIGHTED PLANTIO FRENTES SECTION */}
               {filteredFrentes.filter(f => f.nome.toLowerCase().includes('plantio')).length > 0 && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {filteredFrentes.filter(f => f.nome.toLowerCase().includes('plantio')).map((f) => (
-                    <motion.div
-                      key={f.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="bg-gradient-to-br from-[#00843D] to-[#006B32] p-8 rounded-[40px] shadow-xl relative overflow-hidden group cursor-pointer hover:scale-[1.01] hover:shadow-2xl hover:shadow-[#5adc6a]/15 hover:ring-2 hover:ring-[#5adc6a]/40 transition-all border border-transparent hover:border-[#5adc6a]"
-                      onClick={() => setSelectedFrenteId(f.id)}
-                    >
-                      <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-32 translate-x-32 blur-3xl group-hover:scale-125 transition-transform duration-700" />
-                      <div className="absolute bottom-0 left-0 w-32 h-32 bg-yellow-400/10 rounded-full translate-y-16 -translate-x-16 blur-2xl" />
-                      
-                      <div className="relative z-10">
-                        <div className="flex justify-between items-start mb-6">
-                          <div>
-                            <div className="bg-yellow-400 text-black px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest inline-block mb-3">
-                              Frente de Plantio
+                  {filteredFrentes.filter(f => f.nome.toLowerCase().includes('plantio')).map((f) => {
+                    const isWorking = f.status === 'Trabalhando';
+                    const isStopped = f.status === 'Parada';
+                    const isRainWind = f.status === 'C/Vento/Chuva';
+                    
+                    let bgGradient = "bg-gradient-to-br from-[#00843D] to-[#006B32]";
+                    let borderHover = "hover:border-[#5adc6a]";
+                    let ringHover = "hover:ring-[#5adc6a]/40";
+                    let shadowHover = "hover:shadow-[#5adc6a]/15";
+                    let textMuted = "text-green-100";
+                    let pillBg = "bg-yellow-400 text-black";
+                    
+                    if (isStopped) {
+                      bgGradient = "bg-gradient-to-br from-red-600 to-red-800";
+                      borderHover = "hover:border-red-400";
+                      ringHover = "hover:ring-red-400/40";
+                      shadowHover = "hover:shadow-red-500/15";
+                      textMuted = "text-red-100";
+                      pillBg = "bg-white text-red-700";
+                    } else if (isRainWind) {
+                      bgGradient = "bg-gradient-to-br from-blue-600 to-blue-800";
+                      borderHover = "hover:border-blue-400";
+                      ringHover = "hover:ring-blue-400/40";
+                      shadowHover = "hover:shadow-blue-500/15";
+                      textMuted = "text-blue-100";
+                      pillBg = "bg-white text-blue-700";
+                    } else if (f.status === 'Mudança') {
+                      bgGradient = "bg-gradient-to-br from-amber-600 to-amber-800";
+                      borderHover = "hover:border-amber-400";
+                      ringHover = "hover:ring-amber-400/40";
+                      shadowHover = "hover:shadow-amber-500/15";
+                      textMuted = "text-amber-100";
+                      pillBg = "bg-white text-amber-700";
+                    }
+
+                    return (
+                      <motion.div
+                        key={f.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className={cn(
+                          bgGradient,
+                          "p-8 rounded-[40px] shadow-xl relative overflow-hidden group cursor-pointer hover:scale-[1.01] hover:shadow-2xl transition-all border border-transparent",
+                          borderHover,
+                          ringHover,
+                          shadowHover
+                        )}
+                        onClick={() => setSelectedFrenteId(f.id)}
+                        data-theme-ignore="true"
+                      >
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-32 translate-x-32 blur-3xl group-hover:scale-125 transition-transform duration-700" />
+                        <div className="absolute bottom-0 left-0 w-32 h-32 bg-yellow-400/10 rounded-full translate-y-16 -translate-x-16 blur-2xl" />
+                        
+                        <div className="relative z-10">
+                          <div className="flex justify-between items-start mb-6">
+                            <div>
+                              <div className={cn(pillBg, "px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest inline-block mb-3")}>
+                                Frente de Plantio
+                              </div>
+                              <h3 className="text-4xl font-black text-white uppercase tracking-tighter leading-none">
+                                {f.frente}
+                              </h3>
+                              <p className={cn(textMuted, "font-bold text-sm mt-1 opacity-80")}>{f.fazenda}</p>
                             </div>
-                            <h3 className="text-4xl font-black text-white uppercase tracking-tighter leading-none">
-                              {f.frente}
-                            </h3>
-                            <p className="text-green-100 font-bold text-sm mt-1 opacity-80">{f.fazenda}</p>
+                            <div className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center text-white border border-white/20">
+                              <Tractor size={32} />
+                            </div>
                           </div>
-                          <div className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center text-white border border-white/20">
-                            <Tractor size={32} />
+
+                          <div className="grid grid-cols-2 gap-4 mb-8">
+                            <div className="bg-white/5 backdrop-blur-sm p-4 rounded-2xl border border-white/10">
+                              <p className={cn("text-[10px] font-black uppercase tracking-widest mb-1 opacity-60", textMuted)}>Status</p>
+                              <p className="text-lg font-black text-white uppercase tracking-tight">{f.status}</p>
+                            </div>
+                            <div className="bg-white/5 backdrop-blur-sm p-4 rounded-2xl border border-white/10">
+                              <p className={cn("text-[10px] font-black uppercase tracking-widest mb-1 opacity-60", textMuted)}>Gestor</p>
+                              <p className="text-lg font-black text-white uppercase tracking-tight truncate">{f.gestor}</p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className={cn("flex items-center gap-1.5 font-black text-[10px] uppercase", textMuted)}>
+                                <MapPin size={14} />
+                                {f.quadras} Quadras
+                              </div>
+                              <div className="w-1 h-1 bg-white/20 rounded-full" />
+                              <div className={cn("flex items-center gap-1.5 font-black text-[10px] uppercase", textMuted)}>
+                                <Sprout size={14} />
+                                {f.talhoes} Talhões
+                              </div>
+                            </div>
+                            <div className={cn("text-[10px] font-black uppercase opacity-60", textMuted)}>
+                              Atualizado: {f.updatedAt}
+                            </div>
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4 mb-8">
-                          <div className="bg-white/5 backdrop-blur-sm p-4 rounded-2xl border border-white/10">
-                            <p className="text-[10px] font-black text-green-100/50 uppercase tracking-widest mb-1">Status</p>
-                            <p className="text-lg font-black text-white uppercase tracking-tight">{f.status}</p>
-                          </div>
-                          <div className="bg-white/5 backdrop-blur-sm p-4 rounded-2xl border border-white/10">
-                            <p className="text-[10px] font-black text-green-100/50 uppercase tracking-widest mb-1">Gestor</p>
-                            <p className="text-lg font-black text-white uppercase tracking-tight truncate">{f.gestor}</p>
-                          </div>
+                        <div className="mt-8 bg-black/20 h-2 rounded-full overflow-hidden">
+                          <motion.div 
+                            initial={{ width: 0 }}
+                            animate={{ width: f.status === 'Trabalhando' ? '65%' : '0%' }}
+                            transition={{ duration: 1.5, delay: 0.5 }}
+                            className="h-full bg-yellow-400 shadow-[0_0_12px_rgba(250,204,21,0.5)]"
+                          />
                         </div>
-
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className="flex items-center gap-1.5 text-green-100 font-black text-[10px] uppercase">
-                              <MapPin size={14} />
-                              {f.quadras} Quadras
-                            </div>
-                            <div className="w-1 h-1 bg-green-100/20 rounded-full" />
-                            <div className="flex items-center gap-1.5 text-green-100 font-black text-[10px] uppercase">
-                              <Sprout size={14} />
-                              {f.talhoes} Talhões
-                            </div>
-                          </div>
-                          <div className="text-[10px] font-black text-green-100/40 uppercase">
-                            Atualizado: {f.updatedAt}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="mt-8 bg-black/20 h-2 rounded-full overflow-hidden">
-                        <motion.div 
-                          initial={{ width: 0 }}
-                          animate={{ width: f.status === 'Trabalhando' ? '65%' : '0%' }}
-                          transition={{ duration: 1.5, delay: 0.5 }}
-                          className="h-full bg-yellow-400 shadow-[0_0_12px_rgba(250,204,21,0.5)]"
-                        />
-                      </div>
-                    </motion.div>
-                  ))}
+                      </motion.div>
+                    );
+                  })}
                 </div>
               )}
 

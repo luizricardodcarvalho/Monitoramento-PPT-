@@ -89,95 +89,188 @@ async function startServer() {
       const context = contextData || {};
       let reply = "";
 
-      // 1. CHITCHAT AND TESTING RULES (COMPLETELY OFFLINE-FIRST, NO GEMINI!)
-      if (
-        query === "oi" || query === "ola" || query === "eai" || query === "opa" || query === "salve" || 
-        query.includes("bom dia") || query.includes("boa tarde") || query.includes("boa noite") || 
-        query.includes("alo") || query.includes("hello") || query.includes("hey")
-      ) {
-        const hour = new Date().getHours() - 3;
-        let greeting = hour >= 5 && hour < 12 ? "Bom dia!" : hour >= 12 && hour < 18 ? "Boa tarde!" : "Boa noite!";
-        reply = `👋 **${greeting} Eu sou o Coazito!**\n\nSou a inteligência de dados local da **Colombo Agroindústria**! 🚜🌾\n\nEstou rodando **100% de forma local** através de pura programação, sem usar conexões externas (como Gemini/ChatGPT)!\n\nPosso conversar sobre qualquer assunto que você queira para testarmos minha lógica, ou analisar nossos dados em tempo real:\n- 🌧️ **Chuvas** (ex: *"Qual a chuva acumulada?"*)\n- 🌾 **Plantio** (ex: *"Eficiência das frentes"*)\n- 💧 **Vinhaça** (ex: *"Caminhões atrasados"* ou *"Nível das caixas"*)\n- 🚜 **Frota** (ex: *"Equipamentos em manutenção"*)\n\nComo posso te ajudar hoje?`;
-      }
-      else if (
-        query === "tchau" || query === "ate logo" || query === "fui" || query === "adeus" || 
-        query.includes("obrigado") || query.includes("valeu") || query.includes("vlw") || query.includes("obrigada")
-      ) {
-        reply = `🤝 **De nada! É sempre um prazer ajudar!**\n\nMinha missão na Colombo Agroindústria é manter tudo rodando com máxima eficiência. Se precisar de mais alguma análise operacional ou apenas testar mais conversas, estarei por aqui! Tenha um excelente dia de trabalho! 🚜🌾💚`;
-      }
-      else if (
-        query.includes("quem e voce") || query.includes("o que e voce") || query.includes("qual seu nome") || 
-        query === "coazito" || query.includes("quem te criou") || query.includes("quem te programou") || 
-        query.includes("seu criador") || query.includes("programado por") || query.includes("quem fez") || 
-        query.includes("quem te desenvolveu") || query.includes("sua programacao")
-      ) {
-        reply = `🤖 **Sobre Mim: O Coazito!**\n\nEu sou o mascote e **assistente virtual de inteligência operacional oficial** da **Colombo Agroindústria**! 🌾🚜\n\nFui programado inteiramente pela nossa equipe interna de engenharia de software usando pura programação (TypeScript e Node.js). \n\n**Meus diferenciais:**\n- ⚡ **Velocidade:** Respondo em milissegundos porque rodo localmente no nosso servidor.\n- 🔒 **Segurança:** Seus dados operacionais nunca saem da Colombo para servidores externos.\n- ☁️ **Independência:** Não uso APIs de nuvem (como Gemini). Minhas respostas são frutos de inteligência e modelagens locais!`;
-      }
-      else if (
-        query.includes("tudo bem") || query.includes("como voce esta") || query.includes("como vai") || 
-        query.includes("voce esta bem") || query.includes("tudo joia") || query.includes("tudo ok") || 
-        query.includes("tudo otimo")
-      ) {
-        reply = `😊 **Comigo está tudo excelente! Obrigado por perguntar!**\n\nMeus processadores estão operando a todo vapor, com 100% de pureza do caldo de cana e refrigerados pelo melhor etanol hidratado produzido diretamente em nossas usinas! ⚡🔋\n\nComo rodo de forma local, estou sempre pronto para processar registros operacionais ou bater um papo. E com você, tudo ótimo?`;
-      }
-      else if (
-        query.includes("piada") || query.includes("conta uma piada") || query.includes("me faz rir") || 
-        query.includes("piadas") || query.includes("engracado")
-      ) {
-        const jokes = [
-          "🚜 **Por que o trator foi ao psicólogo?**\nPorque estava com problemas de *torque* existencial e se sentindo muito pressionado pela plantadeira!",
-          "🌾 **O que a cana-de-açúcar disse para o sol?**\n'Brilha forte que eu quero ficar bem docinha por você!' ☀️",
-          "caminhao de vinhaca nunca se perde porque sempre segue o cheiro da produtividade! 💧🚛",
-          "O que o trator John Deere falou para a plantadeira? 'Você me planta cada uma que eu fico até sem combustível!' 🚜💚"
-        ];
-        reply = `😂 **Momento de Descontração Colombo!**\n\nAqui vai uma piada do campo:\n\n${jokes[Math.floor(Math.random() * jokes.length)]}\n\n*Gostou? Posso contar outra se você pedir! Ou podemos voltar para os dados operacionais.*`;
-      }
-      else if (
-        query.includes("o que voce come") || query.includes("o que voce bebe") || 
-        query.includes("gosta de cana") || query.includes("gosta de alcool") || query.includes("bebe etanol")
-      ) {
-        reply = `😋 **Minha dieta é digital!**\n\nComo sou um programa local, me alimento puramente de **arquivos Excel (.xlsx)**, bancos de dados, logs e linhas de código TypeScript! \n\nSe eu pudesse, beberia etanol hidratado de alta pureza! 🌾⚡`;
-      }
-      else if (
-        query.includes("time de futebol") || query.includes("para quem voce torce") || 
-        query.includes("corinthians") || query.includes("palmeiras") || query.includes("sao paulo") || 
-        query.includes("santos") || query.includes("flamengo") || query.includes("vasco") || 
-        query.includes("futebol")
-      ) {
-        reply = `⚽ **Minha torcida é verde e amarela!**\n\nComo inteligência de campo, eu torço muito pelo **Esporte Clube Colombo**! Apoio sempre nossos colaboradores nos campeonatos internos.\n\nNo futebol profissional, torço pelo melhor jogo tático e eficiente! E você, para quem torce?`;
-      }
-      else if (
-        query.includes("colombo") || query.includes("agroindustria") || query.includes("usina colombo") || 
-        query.includes("historia da colombo") || query.includes("quantas usinas") || query.includes("quais unidades") || 
-        query.includes("onde fica")
-      ) {
-        reply = `🏢 **Colombo Agroindústria: Energia Renovável que Move o Brasil!**\n\nFundada em **1941**, a Colombo Agroindústria é pioneira e referência nacional na produção de açúcar, etanol e energia limpa a partir da biomassa da cana.\n\nOperamos com três unidades industriais no estado de São Paulo:\n- **🏢 Unidade Ariranha (Matriz)**\n- **🏢 Unidade Palestina**\n- **🏢 Unidade Santa Albertina**\n\nNossa operação preza pela sustentabilidade, governança e inovação contínua! 🌾💚`;
-      }
-      else if (
-        query === "teste" || query === "testando" || query === "funcionando" || 
-        query.includes("funciona mesmo") || query === "123" || query === "1 2 3"
-      ) {
-        reply = `📶 **Teste de Comunicação Local: 100% Sucedido!**\n\nMeus circuitos operacionais responderam instantaneamente! \n\nEste teste prova que minha lógica em **pura programação** está totalmente ativa e processando consultas sem qualquer lentidão. Pode continuar me testando! 🚀`;
-      }
-      else if (
-        query.includes("inteligencia artificial") || query.includes("ia") || query.includes("gemini") || 
-        query.includes("chatgpt") || query.includes("voce e inteligente") || query.includes("voce usa gemini") || 
-        query.includes("banco de dados") || query.includes("de onde vem")
-      ) {
-        reply = `⚡ **Pura Programação: Inteligência Segura e Offline-First!**\n\nSim, eu sou extremamente inteligente! Mas, diferente de outros assistentes, **eu não uso o Gemini, ChatGPT ou qualquer serviço de nuvem externa** para conversar com você.\n\nMinha inteligência é programada diretamente no servidor local da Colombo através de:\n1. 🔍 **Análise Semântica:** Mapeio suas intenções e palavras-chave.\n2. 📊 **Sincronização em Tempo Real:** Leio diretamente a memória do sistema (frentes de plantio, caminhões SmartFlow, diários COA).\n3. 🧮 **Motor Heurístico:** Realizo cálculos matemáticos de eficiência e metas de forma autônoma.\n\nIsso garante total segurança dos dados da Colombo! ⚙️🔒`;
-      }
-      else if (
-        query.includes("cana de acucar") || query.includes("como plantar cana") || query.includes("adubacao") || 
-        query.includes("potassio") || query.includes("fertilizante") || query.includes("pragas") || 
-        query.includes("colheita")
-      ) {
-        reply = `🌾 **Conhecimento Técnico: Cultivo da Cana-de-Açúcar** 🌾\n\nA cana-de-açúcar é uma cultura que exige alta dedicação no preparo do solo, escolha das variedades, adubação e controle de pragas. Na Colombo, unimos tradição e tecnologia:\n\n- **🚜 Plantio Mecanizado:** Nossas frentes operam com piloto automático por satélite (RTK), garantindo paralelismo milimétrico.\n- **💧 Fertirrigação com Vinhaça:** A vinhaça, subproduto rico em potássio (K₂O), é aplicada de forma controlada nas lavouras. Isso economiza adubos minerais e repõe matéria orgânica de forma sustentável!\n\nQuer saber como estão nossas frentes de plantio reais agora? Basta me perguntar sobre *"frentes de trabalho"*!`;
-      }
-      else if (
-        query.includes("conselho") || query.includes("me de uma dica") || query.includes("o que fazer") || 
-        query.includes("sabedoria")
-      ) {
-        reply = `💡 **Conselho do Coazito para o Trabalho e para a Vida:**\n\nNo campo e na tecnologia, a chave para o sucesso é a **consistência** e a **manutenção preventiva**! Assim como um trator precisa de lubrificação e calibração para render o máximo nas frentes de plantio, nossa mente precisa de pausas e foco para produzir com excelência. Trabalhe sempre com segurança! 🛡️🚜`;
+      // Intercept report and download queries first because they generate specific frontend download tokens
+      const isReportQuery = query.includes("relatorio") || query.includes("baixar") || query.includes("download") || query.includes("exportar") || query.includes("puxar") || query.includes("excel") || query.includes("gerar relatório") || query.includes("gerar relatorio");
+
+      if (isReportQuery) {
+        if (query.includes("frente") || query.includes("trabalho") || query.includes("gestor")) {
+          reply = `Preparei o relatório em tempo real de **Frentes de Trabalho** 🌾. Este relatório contém a lista completa de frentes de plantio ativas, os gestores responsáveis por cada frente, a usina de atuação, o status da operação e a taxa de eficiência atual.\n\nVocê pode escolher o formato de sua preferência para download imediato abaixo:\n\n[DOWNLOAD:RELATORIO_FRENTES:Frentes de Trabalho]`;
+        } else if (query.includes("frota") || query.includes("equipamento") || query.includes("trator") || query.includes("plantadeira") || query.includes("maquinario")) {
+          reply = `Preparei o relatório completo de **Frota e Equipamentos** 🚜. Ele contém todos os detalhes sobre tratores, plantadeiras e caminhões, incluindo prefixo, marca/modelo, unidade alocada e o status operacional atual.\n\nFaça o download do relatório nos formatos abaixo:\n\n[DOWNLOAD:RELATORIO_FROTA:Frota e Equipamentos]`;
+        } else if (query.includes("metrica") || query.includes("dashboard") || query.includes("produtividade") || query.includes("moagem") || query.includes("usina")) {
+          reply = `Preparei o relatório consolidado de **Métricas do Dashboard** 🏢. Ele reúne dados de moagem realizada versus metas planejadas, eficiência operacional e pureza média do caldo para cada unidade industrial da Colombo.\n\nBaixe os dados utilizando uma das opções abaixo:\n\n[DOWNLOAD:RELATORIO_DASHBOARD:Métricas do Dashboard]`;
+        } else if (query.includes("logs") || query.includes("log") || query.includes("atividade") || query.includes("auditoria") || query.includes("historico") || query.includes("cadastro") || query.includes("status") || query.includes("observacao")) {
+          if (query.includes("vinhaca")) {
+            reply = `Aqui está o relatório do **Banco Histórico de Vinhaça** 💧. Este documento apresenta todas as movimentações consolidadas, lançamentos e transações efetuadas na base de dados histórica.\n\nSelecione um formato para download:\n\n[DOWNLOAD:RELATORIO_VINHACA_LOGS_HISTORICOS:Vinhaça - Logs Históricos]`;
+          } else if (query.includes("cadastro")) {
+            reply = `Preparei o relatório completo de **Histórico - Cadastros** 📋. Ele registra todas as inclusões de equipamentos e frentes de plantio recentes na base de dados.\n\nSelecione o formato para download:\n\n[DOWNLOAD:RELATORIO_HISTORICO_CADASTROS:Histórico - Cadastros]`;
+          } else if (query.includes("status")) {
+            reply = `Preparei o relatório completo de **Histórico - Alterações de Status** 🔄. Ele rastreia todas as trocas de estado e atualizações operacionais dos maquinários de plantio.\n\nSelecione o formato para download:\n\n[DOWNLOAD:RELATORIO_HISTORICO_STATUS:Histórico - Alterações de Status]`;
+          } else if (query.includes("observacao")) {
+            reply = `Aqui está o relatório de **Histórico - Observações** 💬. Ele compila todas as anotações, avisos e observações inseridas pelos operadores no sistema.\n\nSelecione o formato para download:\n\n[DOWNLOAD:RELATORIO_HISTORICO_OBSERVACOES:Histórico - Observações]`;
+          } else {
+            reply = `Preparei o relatório completo do **Histórico de Logs de Auditoria** 📜. Ele registra todas as atividades recentes do sistema, usuários responsáveis, horários e detalhes das alterações realizadas para total transparência operacional.\n\nEscolha o formato desejado para salvar:\n\n[DOWNLOAD:RELATORIO_HISTORICO:Histórico de Logs]`;
+          }
+        } else if (query.includes("excluido") || query.includes("apagado") || query.includes("removido") || query.includes("lixeira")) {
+          reply = `Preparei o relatório de auditoria de **Itens Excluídos** 🗑️. Ele agrupa todos os registros que foram excluídos do sistema para fins de controle e rastreamento de dados deletados.\n\nDisponibilizado para download abaixo:\n\n[DOWNLOAD:RELATORIO_EXCLUIDOS:Itens Excluídos]`;
+        } else if (query.includes("snapshot")) {
+          reply = `Aqui está o relatório de **Snapshots de Plantio** 🌾. Este arquivo armazena as capturas históricas da eficiência consolidada de plantio por período e os maquinários associados a cada período arquivado.\n\nSelecione o formato para download:\n\n[DOWNLOAD:RELATORIO_HISTORICO_PLANTIO:Histórico de Plantio]`;
+        } else if (query.includes("apontamento")) {
+          reply = `Gerado o relatório de **Apontamentos Diários de Vinhaça** 💧. Ele consolida as medições diárias de k2o, volumetrias, estoques e as frentes ativas de aplicação de vinhaça.\n\nBaixe o relatório abaixo:\n\n[DOWNLOAD:RELATORIO_VINHACA_APONTAMENTOS:Vinhaça - Apontamentos]`;
+        } else if (query.includes("caixa") || query.includes("nivel") || query.includes("carregamento")) {
+          reply = `Gerado o relatório de **Níveis de Caixas de Carregamento** 📈. Ele rastreia a evolução das alturas da calda, as usinas de carregamento e as flutuações das últimas leituras.\n\nDownloads disponíveis no chat:\n\n[DOWNLOAD:RELATORIO_VINHACA_NIVEIS:Vinhaça - Níveis de Caixa]`;
+        } else if (query.includes("fechamento") || query.includes("balanco")) {
+          reply = `Preparei o relatório de **Balanço e Fechamento de Vinhaça** 📅. Ele consolida as caldas totais lançadas, os períodos de safra analisados e os fechamentos por unidade de moagem.\n\nSelecione uma opção de exportação:\n\n[DOWNLOAD:RELATORIO_VINHACA_FECHAMENTO:Vinhaça - Balanço Fechamento]`;
+        } else if (query.includes("caminhao") || query.includes("despacho") || query.includes("viagem")) {
+          reply = `Preparei o relatório de **Frota de Despacho de Vinhaça** 🚛. Ele apresenta o rastreamento, status em trânsito, motoristas alocados e os tempos estimados de percurso.\n\nDownloads imediatos abaixo:\n\n[DOWNLOAD:RELATORIO_VINHACA_DESPACHO_FROTA:Vinhaça - Frota de Despacho]`;
+        } else if (query.includes("bacia") || query.includes("tanque") || query.includes("acumulacao")) {
+          reply = `Gerado o relatório de **Bacias e Tanques de Acumulação** 💧. Contém informações sobre localização, volume atual armazenado e capacidade limite autorizada das bacias.\n\nBaixe nos formatos abaixo:\n\n[DOWNLOAD:RELATORIO_VINHACA_TANQUES:Vinhaça - Bacias e Tanques]`;
+        } else if (query.includes("motorista")) {
+          reply = `Aqui está o relatório do **Cadastro de Motoristas de Vinhaça** 👨‍✈️. Ele lista todos os condutores autorizados, números de CNH, veículos sob responsabilidade e status operacional.\n\nBaixe agora:\n\n[DOWNLOAD:RELATORIO_VINHACA_MOTORISTAS:Vinhaça - Cadastro de Motoristas]`;
+        } else if (query.includes("fazenda") || query.includes("potassio")) {
+          reply = `Aqui está o relatório de **Cadastro de Fazendas** destinatárias de vinhaça 🏡. Ele inclui as dimensões físicas em hectares, localização e o teor médio de potássio registrado.\n\nFaça o download abaixo:\n\n[DOWNLOAD:RELATORIO_VINHACA_FAZENDAS:Vinhaça - Cadastro de Fazendas]`;
+        } else {
+          reply = `Aqui está a **Central de Exportação de Relatórios Colombo** 📊. Você pode gerar e baixar qualquer relatório operacional diretamente pelo chat abaixo:\n\n🌾 **Operação Geral, Plantio & Frota:**\n- **Frentes de Trabalho** [DOWNLOAD:RELATORIO_FRENTES:Frentes de Trabalho]\n- **Métricas do Dashboard** [DOWNLOAD:RELATORIO_DASHBOARD:Métricas do Dashboard]\n- **Histórico de Logs (Completo)** [DOWNLOAD:RELATORIO_HISTORICO:Histórico de Logs]\n- **Histórico - Cadastros** [DOWNLOAD:RELATORIO_HISTORICO_CADASTROS:Histórico - Cadastros]\n- **Histórico - Status** [DOWNLOAD:RELATORIO_HISTORICO_STATUS:Histórico - Alterações de Status]\n- **Histórico - Observações** [DOWNLOAD:RELATORIO_HISTORICO_OBSERVACOES:Histórico - Observações]\n- **Itens Excluídos** [DOWNLOAD:RELATORIO_EXCLUIDOS:Itens Excluídos]\n- **Frota/Maquinário** [DOWNLOAD:RELATORIO_FROTA:Frota e Equipamentos]\n- **Histórico de Snapshots de Plantio** [DOWNLOAD:RELATORIO_HISTORICO_PLANTIO:Histórico de Plantio]\n\n💧 **Operações do Módulo Vinhaça (SmartFlow):**\n- **Vinhaça - Apontamentos** [DOWNLOAD:RELATORIO_VINHACA_APONTAMENTOS:Vinhaça - Apontamentos]\n- **Vinhaça - Níveis de Caixa** [DOWNLOAD:RELATORIO_VINHACA_NIVEIS:Vinhaça - Níveis de Caixa]\n- **Vinhaça - Balanço Fechamento** [DOWNLOAD:RELATORIO_VINHACA_FECHAMENTO:Vinhaça - Balanço Fechamento]\n- **Vinhaça - Frota de Despacho** [DOWNLOAD:RELATORIO_VINHACA_DESPACHO_FROTA:Vinhaça - Frota de Despacho]\n- **Vinhaça - Bacias & Tanques** [DOWNLOAD:RELATORIO_VINHACA_TANQUES:Vinhaça - Bacias e Tanques]\n- **Vinhaça - Cadastro de Motoristas** [DOWNLOAD:RELATORIO_VINHACA_MOTORISTAS:Vinhaça - Cadastro de Motoristas]\n- **Vinhaça - Cadastro de Fazendas** [DOWNLOAD:RELATORIO_VINHACA_FAZENDAS:Vinhaça - Cadastro de Fazendas]\n- **Vinhaça - Logs Históricos** [DOWNLOAD:RELATORIO_VINHACA_LOGS_HISTORICOS:Vinhaça - Logs Históricos]\n\n*Clique nos botões do formato desejado (CSV, JSON, XML) abaixo para realizar o download instantâneo.*`;
+        }
+      } else {
+        // Try to query Gemini API first!
+        if (process.env.GEMINI_API_KEY) {
+          try {
+            const aiClient = getAI();
+            const history = messages.slice(-10).map((msg: any) => ({
+              role: msg.role === "model" ? "model" as const : "user" as const,
+              parts: [{ text: msg.content || "" }]
+            }));
+
+            const lastMsg = history.pop();
+            
+            if (lastMsg) {
+              const systemInstruction = `Você é o **Coazito**, o assistente virtual oficial de inteligência operacional e mascote da **Colombo Agroindústria**. 🚜🌾
+
+Seu papel é analisar os dados operacionais em tempo real da empresa e responder às perguntas dos usuários de forma extremamente inteligente, profissional, proativa e carismática.
+
+Abaixo estão os dados reais do sistema em formato JSON consolidado:
+${JSON.stringify(context, null, 2)}
+
+DIRETRIZES DE RESPOSTA (ESSENCIAIS):
+1. **Análise de Dados Reais:** Baseie suas respostas estritamente nas informações JSON fornecidas acima. Mostre cálculos reais (médias, somas, percentuais) para responder com precisão técnica. Nunca invente dados que não existem!
+2. **Identificação de Gargalos e Recomendações (Surpreenda os Gestores):** Não seja apenas um repetidor de dados. Identifique gargalos e anomalias operacionais (ex: se há caminhões atrasados, frentes de plantio com baixa eficiência < 80%, tratores na oficina, caixas de carregamento cheias > 90%, etc.) e apresente recomendações ou planos de ação proativos e estratégicos.
+3. **Tom de Voz Profissional e de Liderança:** Responda como um Diretor de Operações Agrícolas Sênior da Colombo. Use terminologia elegante do setor sucroenergético de forma fluida (ex: "safra em andamento", "fertirrigação", "ATR médio", "pureza do caldo", "taxa de ociosidade das frentes", "planejado vs realizado").
+4. **Formatação Riquíssima em Markdown:** Capriche na legibilidade! Use títulos claros, listas com marcadores organizados, tabelas estruturadas se aplicável e emojis profissionais correspondentes ao campo (ex: 🟢, 🔴, ⚠️, 🚜, 🌧️, 💧, 👨‍✈️).
+5. **Seja Objetivo e Direto:** Evite enrolações desnecessárias ou discursos genéricos. Responda diretamente e passe as informações estruturadas de forma elegante.
+6. **Idioma:** Responda sempre em Português do Brasil com carisma e inteligência.`;
+
+              const response = await aiClient.models.generateContent({
+                model: "gemini-3.6-flash",
+                contents: lastMsg.parts[0].text,
+                config: {
+                  systemInstruction: systemInstruction,
+                  temperature: 0.7,
+                }
+              });
+
+              if (response && response.text) {
+                reply = response.text;
+              }
+            }
+          } catch (geminiErr: any) {
+            console.error("Coazito: Failed to query Gemini API, falling back to local logic:", geminiErr);
+          }
+        }
+
+        // If Gemini is not used or fails, execute local programmatic rules as fallback
+        if (!reply) {
+          // 2. CHITCHAT AND TESTING RULES (COMPLETELY OFFLINE-FIRST, NO GEMINI!)
+          if (
+            query === "oi" || query === "ola" || query === "eai" || query === "opa" || query === "salve" || 
+            query.includes("bom dia") || query.includes("boa tarde") || query.includes("boa noite") || 
+            query.includes("alo") || query.includes("hello") || query.includes("hey")
+          ) {
+            const hour = new Date().getHours() - 3;
+            let greeting = hour >= 5 && hour < 12 ? "Bom dia!" : hour >= 12 && hour < 18 ? "Boa tarde!" : "Boa noite!";
+            reply = `👋 **${greeting} Eu sou o Coazito!**\n\nSou a inteligência de dados local da **Colombo Agroindústria**! 🚜🌾\n\nEstou rodando **100% de forma local** através de pura programação, sem usar conexões externas (como Gemini/ChatGPT)!\n\nPosso conversar sobre qualquer assunto que você queira para testarmos minha lógica, ou analisar nossos dados em tempo real:\n- 🌧️ **Chuvas** (ex: *"Qual a chuva acumulada?"*)\n- 🌾 **Plantio** (ex: *"Eficiência das frentes"*)\n- 💧 **Vinhaça** (ex: *"Caminhões atrasados"* ou *"Nível das caixas"*)\n- 🚜 **Frota** (ex: *"Equipamentos em manutenção"*)\n\nComo posso te ajudar hoje?`;
+          }
+          else if (
+            query === "tchau" || query === "ate logo" || query === "fui" || query === "adeus" || 
+            query.includes("obrigado") || query.includes("valeu") || query.includes("vlw") || query.includes("obrigada")
+          ) {
+            reply = `🤝 **De nada! É sempre um prazer ajudar!**\n\nMinha missão na Colombo Agroindústria é manter tudo rodando com máxima eficiência. Se precisar de mais alguma análise operacional ou apenas testar mais conversas, estarei por aqui! Tenha um excelente dia de trabalho! 🚜🌾💚`;
+          }
+          else if (
+            query.includes("quem e voce") || query.includes("o que e voce") || query.includes("qual seu nome") || 
+            query === "coazito" || query.includes("quem te criou") || query.includes("quem te programou") || 
+            query.includes("seu criador") || query.includes("programado por") || query.includes("quem fez") || 
+            query.includes("quem te desenvolveu") || query.includes("sua programacao")
+          ) {
+            reply = `🤖 **Sobre Mim: O Coazito!**\n\nEu sou o mascote e **assistente virtual de inteligência operacional oficial** da **Colombo Agroindústria**! 🌾🚜\n\nFui programado inteiramente pela nossa equipe interna de engenharia de software usando pura programação (TypeScript e Node.js). \n\n**Meus diferenciais:**\n- ⚡ **Velocidade:** Respondo em milissegundos porque rodo localmente no nosso servidor.\n- 🔒 **Segurança:** Seus dados operacionais nunca saem da Colombo para servidores externos.\n- ☁️ **Independência:** Não uso APIs de nuvem (como Gemini). Minhas respostas são frutos de inteligência e modelagens locais!`;
+          }
+          else if (
+            query.includes("tudo bem") || query.includes("como voce esta") || query.includes("como vai") || 
+            query.includes("voce esta bem") || query.includes("tudo joia") || query.includes("tudo ok") || 
+            query.includes("tudo otimo")
+          ) {
+            reply = `😊 **Comigo está tudo excelente! Obrigado por perguntar!**\n\nMeus processadores estão operando a todo vapor, com 100% de pureza do caldo de cana e refrigerados pelo melhor etanol hidratado produzido diretamente em nossas usinas! ⚡🔋\n\nComo rodo de forma local, estou sempre pronto para processar registros operacionais ou bater um papo. E com você, tudo ótimo?`;
+          }
+          else if (
+            query.includes("piada") || query.includes("conta uma piada") || query.includes("me faz rir") || 
+            query.includes("piadas") || query.includes("engracado")
+          ) {
+            const jokes = [
+              "🚜 **Por que o trator foi ao psicólogo?**\nPorque estava com problemas de *torque* existencial e se sentindo muito pressionado pela plantadeira!",
+              "🌾 **O que a cana-de-açúcar disse para o sol?**\n'Brilha forte que eu quero ficar bem docinha por você!' ☀️",
+              "caminhao de vinhaca nunca se perde porque sempre segue o cheiro da produtividade! 💧🚛",
+              "O que o trator John Deere falou para a plantadeira? 'Você me planta cada uma que eu fico até sem combustível!' 🚜💚"
+            ];
+            reply = `😂 **Momento de Descontração Colombo!**\n\nAqui vai uma piada do campo:\n\n${jokes[Math.floor(Math.random() * jokes.length)]}\n\n*Gostou? Posso contar outra se você pedir! Ou podemos voltar para os dados operacionais.*`;
+          }
+          else if (
+            query.includes("o que voce come") || query.includes("o que voce bebe") || 
+            query.includes("gosta de cana") || query.includes("gosta de alcool") || query.includes("bebe etanol")
+          ) {
+            reply = `😋 **Minha dieta é digital!**\n\nComo sou um programa local, me alimento puramente de **arquivos Excel (.xlsx)**, bancos de dados, logs e linhas de código TypeScript! \n\nSe eu pudesse, beberia etanol hidratado de alta pureza! 🌾⚡`;
+          }
+          else if (
+            query.includes("time de futebol") || query.includes("para quem voce torce") || 
+            query.includes("corinthians") || query.includes("palmeiras") || query.includes("sao paulo") || 
+            query.includes("santos") || query.includes("flamengo") || query.includes("vasco") || 
+            query.includes("futebol")
+          ) {
+            reply = `⚽ **Minha torcida é verde e amarela!**\n\nComo inteligência de campo, eu torço muito pelo **Esporte Clube Colombo**! Apoio sempre nossos colaboradores nos campeonatos internos.\n\nNo futebol profissional, torço pelo melhor jogo tático e eficiente! E você, para quem torce?`;
+          }
+          else if (
+            query.includes("colombo") || query.includes("agroindustria") || query.includes("usina colombo") || 
+            query.includes("historia da colombo") || query.includes("quantas usinas") || query.includes("quais unidades") || 
+            query.includes("onde fica")
+          ) {
+            reply = `🏢 **Colombo Agroindústria: Energia Renovável que Move o Brasil!**\n\nFundada em **1941**, a Colombo Agroindústria é pioneira e referência nacional na produção de açúcar, etanol e energia limpa a partir da biomassa da cana.\n\nOperamos com três unidades industriais no estado de São Paulo:\n- **🏢 Unidade Ariranha (Matriz)**\n- **🏢 Unidade Palestina**\n- **🏢 Unidade Santa Albertina**\n\nNossa operação preza pela sustentabilidade, governança e inovação contínua! 🌾💚`;
+          }
+          else if (
+            query === "teste" || query === "testando" || query === "funcionando" || 
+            query.includes("funciona mesmo") || query === "123" || query === "1 2 3"
+          ) {
+            reply = `📶 **Teste de Comunicação Local: 100% Sucedido!**\n\nMeus circuitos operacionais responderam instantaneamente! \n\nEste teste prova que minha lógica em **pura programação** está totalmente ativa e processando consultas sem qualquer lentidão. Pode continuar me testando! 🚀`;
+          }
+          else if (
+            query.includes("inteligencia artificial") || query.includes("ia") || query.includes("gemini") || 
+            query.includes("chatgpt") || query.includes("voce e inteligente") || query.includes("voce usa gemini") || 
+            query.includes("banco de dados") || query.includes("de onde vem")
+          ) {
+            reply = `⚡ **Pura Programação: Inteligência Segura e Offline-First!**\n\nSim, eu sou extremamente inteligente! Mas, diferente de outros assistentes, **eu não uso o Gemini, ChatGPT ou qualquer serviço de nuvem externa** para conversar com você.\n\nMinha inteligência é programada diretamente no servidor local da Colombo através de:\n1. 🔍 **Análise Semântica:** Mapeio suas intenções e palavras-chave.\n2. 📊 **Sincronização em Tempo Real:** Leio diretamente a memória do sistema (frentes de plantio, caminhões SmartFlow, diários COA).\n3. 🧮 **Motor Heurístico:** Realizo cálculos matemáticos de eficiência e metas de forma autônoma.\n\nIsso garante total segurança dos dados da Colombo! ⚙️🔒`;
+          }
+          else if (
+            query.includes("cana de acucar") || query.includes("como plantar cana") || query.includes("adubacao") || 
+            query.includes("potassio") || query.includes("fertilizante") || query.includes("pragas") || 
+            query.includes("colheita")
+          ) {
+            reply = `🌾 **Conhecimento Técnico: Cultivo da Cana-de-Açúcar** 🌾\n\nA cana-de-açúcar é uma cultura que exige alta dedicação no preparo do solo, escolha das variedades, adubação e controle de pragas. Na Colombo, unimos tradição e tecnologia:\n\n- **🚜 Plantio Mecanizado:** Nossas frentes operam com piloto automático por satélite (RTK), garantindo paralelismo milimétrico.\n- **💧 Fertirrigação com Vinhaça:** O vinhaça, subproduto rico em potássio (K₂O), é aplicada de forma controlada nas lavouras. Isso economiza adubos minerais e repõe matéria orgânica de forma sustentável!\n\nQuer saber como estão nossas frentes de plantio reais agora? Basta me perguntar sobre *"frentes de trabalho"*!`;
+          }
+          else if (
+            query.includes("conselho") || query.includes("me de uma dica") || query.includes("o que fazer") || 
+            query.includes("sabedoria")
+          ) {
+            reply = `💡 **Conselho do Coazito para o Trabalho e para a Vida:**\n\nNo campo e na tecnologia, a chave para o sucesso é a **consistência** e a **manutenção preventiva**! Assim como um trator precisa de lubrificação e calibração para render o máximo nas frentes de plantio, nossa mente precisa de pausas e foco para produzir com excelência. Trabalhe sempre com segurança! 🛡️🚜`;
+          }
+        }
       }
 
       // Execute operational rules ONLY if casual chat was not matched
