@@ -2346,7 +2346,17 @@ export default function App() {
       [data-theme="blue"] .bg-\\[\\#00843D\\]:not([data-theme-ignore="true"]) { background-color: #02529C !important; }
       [data-theme="blue"] .hover\\:bg-\\[\\#00843D\\]:not([data-theme-ignore="true"]):hover { background-color: #004585 !important; }
       [data-theme="blue"] .bg-\\[\\#006B32\\]:not([data-theme-ignore="true"]) { background-color: #01417D !important; }
-      [data-theme="blue"] .bg-\\[\\#5adc6a\\]:not([data-theme-ignore="true"]) { background-color: #00D2FC !important; }
+      /* Primary CTA / Action Buttons (e.g., Exportar Relatório) use Menu Blue with White Text */
+      [data-theme="blue"] .bg-\\[\\#5adc6a\\]:not([data-theme-ignore="true"]) { 
+        background-color: #02529C !important; 
+        color: #ffffff !important; 
+      }
+      [data-theme="blue"] .bg-\\[\\#5adc6a\\]:not([data-theme-ignore="true"]) .text-\\[\\#004d22\\],
+      [data-theme="blue"] .bg-\\[\\#5adc6a\\]:not([data-theme-ignore="true"]) .text-\\[\\#004D22\\],
+      [data-theme="blue"] .bg-\\[\\#5adc6a\\]:not([data-theme-ignore="true"]) svg { 
+        color: #ffffff !important; 
+        stroke: #ffffff !important; 
+      }
       [data-theme="blue"] .bg-\\[\\#5adc6a\\]\\/15:not([data-theme-ignore="true"]) { background-color: rgba(0, 210, 252, 0.15) !important; }
       [data-theme="blue"] .bg-\\[\\#5adc6a\\]\\/20:not([data-theme-ignore="true"]) { background-color: rgba(0, 210, 252, 0.20) !important; }
       [data-theme="blue"] .bg-\\[\\#5adc6a\\]\\/\\[0\\.06\\]:not([data-theme-ignore="true"]) { background-color: rgba(0, 210, 252, 0.06) !important; }
@@ -2592,10 +2602,26 @@ export default function App() {
       [data-theme="blue"] #login-container svg path[stroke="#5adc6a"] { stroke: #00D2FC !important; }
       [data-theme="blue"] #login-container svg circle[fill="#5adc6a"] { fill: #00D2FC !important; }
 
-      /* Sidebar */
+      /* Sidebar Navigation Active Item Styling (Subtle navy container + cyan border outline) */
       [data-theme="blue"] aside.bg-\\[\\#00843D\\] { background-color: #02488a !important; }
-      [data-theme="blue"] aside .bg-\\[\\#5adc6a\\] { background-color: #00D2FC !important; color: #012040 !important; }
-      [data-theme="blue"] aside .text-\\[\\#004d22\\] { color: #012040 !important; }
+      [data-theme="blue"] aside button.bg-\\[\\#5adc6a\\],
+      [data-theme="blue"] aside .bg-\\[\\#5adc6a\\] { 
+        background-color: rgba(2, 82, 156, 0.25) !important; 
+        border: 2px solid #00D2FC !important;
+        color: #00D2FC !important; 
+        box-shadow: 0 0 12px rgba(0, 210, 252, 0.25) !important;
+      }
+      [data-theme="blue"] aside button.bg-\\[\\#5adc6a\\] span,
+      [data-theme="blue"] aside button.bg-\\[\\#5adc6a\\] .text-\\[\\#004d22\\],
+      [data-theme="blue"] aside button.bg-\\[\\#5adc6a\\] .text-\\[\\#004D22\\],
+      [data-theme="blue"] aside .text-\\[\\#004d22\\],
+      [data-theme="blue"] aside .text-\\[\\#004D22\\] { 
+        color: #00D2FC !important; 
+      }
+      [data-theme="blue"] aside button.bg-\\[\\#5adc6a\\] svg { 
+        color: #00D2FC !important; 
+        stroke: #00D2FC !important; 
+      }
 
       /* ================= BLUE THEME DARK MODE ACCESSIBILITY ================= */
       .dark [data-theme="blue"] .text-\\[\\#00843D\\]:not([data-theme-ignore="true"]):not(.status-label-ignore),

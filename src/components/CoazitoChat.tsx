@@ -48,6 +48,188 @@ interface CoazitoChatProps {
   onExport?: (data: any[], filename: string, format: 'xml' | 'csv' | 'json') => void;
 }
 
+// Optimized, memoized individual chat message item
+const ChatMessageItem = React.memo(({ 
+  msg, 
+  handleExport, 
+  getReportDescription 
+}: { 
+  msg: ChatMessage; 
+  handleExport: (filename: string, format: 'xml' | 'csv' | 'json') => void; 
+  getReportDescription: (filename: string) => string; 
+}) => {
+  const isBot = msg.role === "model";
+  
+  const extractDownloads = (text: string) => {
+    const regex = /\[DOWNLOAD:([A-Z0-9_]+):([^\]]+)\]/g;
+    const matches: { filename: string; title: string }[] = [];
+    let match;
+    while ((match = regex.exec(text)) !== null) {
+      matches.push({ filename: match[1], title: match[2] });
+    }
+    return matches;
+  };
+
+  const cleanMessageText = (text: string) => {
+    return text.replace(/\[DOWNLOAD:[A-Z0-9_]+:[^\]]+\]/g, "").trim();
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2 }}
+      className={`flex gap-3 max-w-[85%] ${isBot ? "mr-auto text-left" : "ml-auto flex-row-reverse text-right"}`}
+    >
+      {/* Avatar */}
+      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border shadow-sm ${
+        isBot 
+          ? "bg-emerald-50 text-[#00843D] border-emerald-100" 
+          : "bg-gray-900 text-white border-gray-800"
+      }`}>
+        {isBot ? <Bot size={15} /> : <span className="text-[10px] font-black">OP</span>}
+      </div>
+
+      {/* Bubble */}
+      <div className="space-y-1">
+        <div className={`p-4 rounded-3xl text-sm font-semibold leading-relaxed shadow-sm whitespace-pre-wrap ${
+          isBot 
+            ? "bg-white text-gray-800 border border-gray-150/70 rounded-tl-none" 
+            : "bg-[#00843D] text-white rounded-tr-none font-bold"
+        }`}>
+          {msg.image && msg.image.data && (
+            <div className="mb-3 max-w-xs overflow-hidden rounded-xl border border-white/20 shadow-sm">
+              <img 
+                src={`data:${msg.image.mimeType};base64,${msg.image.data}`} 
+                alt="Anexo enviado pelo operador" 
+                className="max-h-60 w-full object-cover rounded-xl"
+                referrerPolicy="no-referrer"
+              />
+            </div>
+          )}
+          {msg.files && Array.isArray(msg.files) && msg.files.length > 0 && (
+            <div className="mb-3 flex flex-wrap gap-2 max-w-md">
+              {msg.files.map((file: any, fidx: number) => {
+                if (!file.data) return null;
+                const isImg = file.mimeType.startsWith("image/");
+                return (
+                  <div key={fidx} className="overflow-hidden rounded-xl border border-white/20 shadow-sm bg-gray-50 p-1 flex items-center justify-center shrink-0">
+                    {isImg ? (
+                      <img 
+                        src={`data:${file.mimeType};base64,${file.data}`} 
+                        alt={file.name} 
+                        className="max-h-40 max-w-[200px] object-contain rounded-lg"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <div className="flex items-center gap-2 p-2 max-w-xs bg-white rounded-lg">
+                        <FileText size={20} className="text-[#00843D] shrink-0" />
+                        <div className="text-left overflow-hidden">
+                          <p className="text-[10px] font-black text-gray-950 truncate w-24" title={file.name}>
+                            {file.name}
+                          </p>
+                          <p className="text-[8px] text-gray-400 font-bold uppercase">
+                            {file.mimeType.split("/")[1] || "DOCUMENTO"}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          {/* Render basic bold/bullet markdown formatting */}
+          {cleanMessageText(msg.content).split("\n").map((line, idx) => {
+            let processed = line;
+            // Handle list item bullets
+            const isBullet = processed.trim().startsWith("- ");
+            if (isBullet) {
+              processed = processed.replace(/^\s*-\s*/, "• ");
+            }
+
+            // Render markdown styled line
+            return (
+              <p 
+                key={idx} 
+                className={`mb-1 last:mb-0 ${isBullet ? "pl-3 text-left" : ""}`}
+              >
+                {processed.split("**").map((chunk, cIdx) => {
+                  if (cIdx % 2 === 1) {
+                    return <strong key={cIdx} className="font-extrabold text-gray-950 dark:text-inherit">{chunk}</strong>;
+                  }
+                  return chunk.split("*").map((subChunk, sIdx) => {
+                    if (sIdx % 2 === 1) {
+                        return <em key={sIdx} className="italic font-bold">{subChunk}</em>;
+                    }
+                    return subChunk;
+                  });
+                })}
+              </p>
+            );
+          })}
+
+          {/* Inline Download Cards for Bot Responses */}
+          {isBot && extractDownloads(msg.content).length > 0 && (
+            <div className="mt-4 pt-4 border-t border-gray-100 space-y-3">
+              <p className="text-[11px] font-black text-[#00843D] uppercase tracking-wider">
+                📥 RELATÓRIOS DISPONÍVEIS PARA DOWNLOAD:
+              </p>
+              {extractDownloads(msg.content).map((download, dIdx) => (
+                <div 
+                  key={dIdx} 
+                  className="p-3 bg-gray-50 hover:bg-emerald-50/50 rounded-2xl border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-all duration-300"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 bg-emerald-100 text-[#00843D] rounded-xl flex items-center justify-center shrink-0">
+                      <FileText size={18} />
+                    </div>
+                    <div className="text-left">
+                      <h4 className="text-xs font-black text-gray-950 uppercase tracking-tight">
+                        {download.title}
+                      </h4>
+                      <p className="text-[10px] text-gray-500 font-bold uppercase mt-0.5">
+                        {getReportDescription(download.filename)}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <button
+                      onClick={() => handleExport(download.filename, 'csv')}
+                      className="text-[10px] font-black bg-white hover:bg-[#00843D] hover:text-white text-[#00843D] px-2.5 py-1.5 rounded-lg border border-emerald-100 hover:border-transparent shadow-sm transition-all flex items-center gap-1 active:scale-95 cursor-pointer"
+                    >
+                      <span>CSV</span>
+                    </button>
+                    <button
+                      onClick={() => handleExport(download.filename, 'json')}
+                      className="text-[10px] font-black bg-white hover:bg-[#00843D] hover:text-white text-[#00843D] px-2.5 py-1.5 rounded-lg border border-emerald-100 hover:border-transparent shadow-sm transition-all flex items-center gap-1 active:scale-95 cursor-pointer"
+                    >
+                      <span>JSON</span>
+                    </button>
+                    <button
+                      onClick={() => handleExport(download.filename, 'xml')}
+                      className="text-[10px] font-black bg-white hover:bg-[#00843D] hover:text-white text-[#00843D] px-2.5 py-1.5 rounded-lg border border-emerald-100 hover:border-transparent shadow-sm transition-all flex items-center gap-1 active:scale-95 cursor-pointer"
+                    >
+                      <span>XML</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        <span className="text-[9px] font-bold text-gray-400 block px-2">
+          {msg.timestamp}
+        </span>
+      </div>
+    </motion.div>
+  );
+}, (prevProps, nextProps) => {
+  // Only re-render when message data changes, ignoring other parent re-render noise
+  return prevProps.msg.id === nextProps.msg.id && prevProps.msg.content === nextProps.msg.content;
+});
+
 export const CoazitoChat: React.FC<CoazitoChatProps> = ({
   frentes = [],
   fleet = [],
@@ -65,7 +247,30 @@ export const CoazitoChat: React.FC<CoazitoChatProps> = ({
     const saved = localStorage.getItem("coazito_chat_history");
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const welcome = parsed.find(m => m.id === "welcome") || parsed[0];
+          let others = parsed.filter(m => m.id !== "welcome");
+          
+          // Truncate message history to prevent massive state chains
+          if (others.length > 10) {
+            others = others.slice(-10);
+          }
+          
+          // Nullify heavy base64 historical images/files to keep memory lean
+          others = others.map((m, idx) => {
+            if (idx < others.length - 1) {
+              return {
+                ...m,
+                image: m.image ? { ...m.image, data: "" } : undefined,
+                files: m.files ? m.files.map(f => ({ ...f, data: "" })) : undefined
+              };
+            }
+            return m;
+          });
+          
+          return [welcome, ...others].filter(Boolean);
+        }
       } catch {
         // ignore
       }
@@ -1055,160 +1260,14 @@ export const CoazitoChat: React.FC<CoazitoChatProps> = ({
       {/* CHAT BODY */}
       <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-gradient-to-b from-gray-50 to-white">
         <AnimatePresence initial={false}>
-          {messages.map((msg) => {
-            const isBot = msg.role === "model";
-            return (
-              <motion.div
-                key={msg.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2 }}
-                className={`flex gap-3 max-w-[85%] ${isBot ? "mr-auto text-left" : "ml-auto flex-row-reverse text-right"}`}
-              >
-                {/* Avatar */}
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border shadow-sm ${
-                  isBot 
-                    ? "bg-emerald-50 text-[#00843D] border-emerald-100" 
-                    : "bg-gray-900 text-white border-gray-800"
-                }`}>
-                  {isBot ? <Bot size={15} /> : <span className="text-[10px] font-black">OP</span>}
-                </div>
-
-                {/* Bubble */}
-                <div className="space-y-1">
-                  <div className={`p-4 rounded-3xl text-sm font-semibold leading-relaxed shadow-sm whitespace-pre-wrap ${
-                    isBot 
-                      ? "bg-white text-gray-800 border border-gray-150/70 rounded-tl-none" 
-                      : "bg-[#00843D] text-white rounded-tr-none font-bold"
-                  }`}>
-                    {msg.image && (
-                      <div className="mb-3 max-w-xs overflow-hidden rounded-xl border border-white/20 shadow-sm">
-                        <img 
-                          src={`data:${msg.image.mimeType};base64,${msg.image.data}`} 
-                          alt="Anexo enviado pelo operador" 
-                          className="max-h-60 w-full object-cover rounded-xl"
-                          referrerPolicy="no-referrer"
-                        />
-                      </div>
-                    )}
-                    {msg.files && Array.isArray(msg.files) && msg.files.length > 0 && (
-                      <div className="mb-3 flex flex-wrap gap-2 max-w-md">
-                        {msg.files.map((file: any, fidx: number) => {
-                          const isImg = file.mimeType.startsWith("image/");
-                          return (
-                            <div key={fidx} className="overflow-hidden rounded-xl border border-white/20 shadow-sm bg-gray-50 p-1 flex items-center justify-center shrink-0">
-                              {isImg ? (
-                                <img 
-                                  src={`data:${file.mimeType};base64,${file.data}`} 
-                                  alt={file.name} 
-                                  className="max-h-40 max-w-[200px] object-contain rounded-lg"
-                                  referrerPolicy="no-referrer"
-                                />
-                              ) : (
-                                <div className="flex items-center gap-2 p-2 max-w-xs bg-white rounded-lg">
-                                  <FileText size={20} className="text-[#00843D] shrink-0" />
-                                  <div className="text-left overflow-hidden">
-                                    <p className="text-[10px] font-black text-gray-950 truncate w-24" title={file.name}>
-                                      {file.name}
-                                    </p>
-                                    <p className="text-[8px] text-gray-400 font-bold uppercase">
-                                      {file.mimeType.split("/")[1] || "DOCUMENTO"}
-                                    </p>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                    {/* Render basic bold/bullet markdown formatting */}
-                    {cleanMessageText(msg.content).split("\n").map((line, idx) => {
-                      let processed = line;
-                      // Handle list item bullets
-                      const isBullet = processed.trim().startsWith("- ");
-                      if (isBullet) {
-                        processed = processed.replace(/^\s*-\s*/, "• ");
-                      }
-
-                      // Render markdown styled line
-                      return (
-                        <p 
-                          key={idx} 
-                          className={`mb-1 last:mb-0 ${isBullet ? "pl-3 text-left" : ""}`}
-                        >
-                          {processed.split("**").map((chunk, cIdx) => {
-                            if (cIdx % 2 === 1) {
-                              return <strong key={cIdx} className="font-extrabold text-gray-950 dark:text-inherit">{chunk}</strong>;
-                            }
-                            return chunk.split("*").map((subChunk, sIdx) => {
-                              if (sIdx % 2 === 1) {
-                                  return <em key={sIdx} className="italic font-bold">{subChunk}</em>;
-                              }
-                              return subChunk;
-                            });
-                          })}
-                        </p>
-                      );
-                    })}
-
-                    {/* Inline Download Cards for Bot Responses */}
-                    {isBot && extractDownloads(msg.content).length > 0 && (
-                      <div className="mt-4 pt-4 border-t border-gray-100 space-y-3">
-                        <p className="text-[11px] font-black text-[#00843D] uppercase tracking-wider">
-                          📥 RELATÓRIOS DISPONÍVEIS PARA DOWNLOAD:
-                        </p>
-                        {extractDownloads(msg.content).map((download, dIdx) => (
-                          <div 
-                            key={dIdx} 
-                            className="p-3 bg-gray-50 hover:bg-emerald-50/50 rounded-2xl border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-all duration-300"
-                          >
-                            <div className="flex items-center gap-2.5">
-                              <div className="w-9 h-9 bg-emerald-100 text-[#00843D] rounded-xl flex items-center justify-center shrink-0">
-                                <FileText size={18} />
-                              </div>
-                              <div className="text-left">
-                                <h4 className="text-xs font-black text-gray-950 uppercase tracking-tight">
-                                  {download.title}
-                                </h4>
-                                <p className="text-[10px] text-gray-500 font-bold uppercase mt-0.5">
-                                  {getReportDescription(download.filename)}
-                                </p>
-                              </div>
-                            </div>
-                            
-                            <div className="flex items-center gap-1.5 shrink-0">
-                              <button
-                                onClick={() => handleExport(download.filename, 'csv')}
-                                className="text-[10px] font-black bg-white hover:bg-[#00843D] hover:text-white text-[#00843D] px-2.5 py-1.5 rounded-lg border border-emerald-100 hover:border-transparent shadow-sm transition-all flex items-center gap-1 active:scale-95 cursor-pointer"
-                              >
-                                <span>CSV</span>
-                              </button>
-                              <button
-                                onClick={() => handleExport(download.filename, 'json')}
-                                className="text-[10px] font-black bg-white hover:bg-[#00843D] hover:text-white text-[#00843D] px-2.5 py-1.5 rounded-lg border border-emerald-100 hover:border-transparent shadow-sm transition-all flex items-center gap-1 active:scale-95 cursor-pointer"
-                              >
-                                <span>JSON</span>
-                              </button>
-                              <button
-                                onClick={() => handleExport(download.filename, 'xml')}
-                                className="text-[10px] font-black bg-white hover:bg-[#00843D] hover:text-white text-[#00843D] px-2.5 py-1.5 rounded-lg border border-emerald-100 hover:border-transparent shadow-sm transition-all flex items-center gap-1 active:scale-95 cursor-pointer"
-                              >
-                                <span>XML</span>
-                              </button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  <span className="text-[9px] font-bold text-gray-400 block px-2">
-                    {msg.timestamp}
-                  </span>
-                </div>
-              </motion.div>
-            );
-          })}
+          {messages.map((msg) => (
+            <ChatMessageItem
+              key={msg.id}
+              msg={msg}
+              handleExport={handleExport}
+              getReportDescription={getReportDescription}
+            />
+          ))}
         </AnimatePresence>
 
         {isLoading && (

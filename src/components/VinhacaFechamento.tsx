@@ -19,7 +19,7 @@ import { registerVinhacaActivity } from "../lib/vinhacaSync";
 // LocalStorage Keys (matching VinhacaNiveis)
 const LOCAL_STORAGE_KEY_LIST = "vinhaca_nivel_carregamentos";
 const LOCAL_STORAGE_KEY_SELECTED = "vinhaca_selected_carregamento_id";
-const LOCAL_STORAGE_KEY_FECHAMENTOS = "vinhaca_fechamentos_by_unit";
+const LOCAL_STORAGE_KEY_FECHAMENTOS = "vinhaca_fechamentos";
 
 export interface UnitFechamentoConfig {
   unitId: string;
