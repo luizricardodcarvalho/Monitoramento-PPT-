@@ -9,7 +9,7 @@ interface PtCaminhoes {
   staRosa: number;
 }
 
-export const VinhacaPainel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+export const VinhacaPainel = React.memo<{ onClose: () => void }>(({ onClose }) => {
   const [isEditing, setIsEditing] = useState(false);
 
   // Panel State Variables (Pre-populated with exact values from the images)
@@ -679,4 +679,4 @@ export const VinhacaPainel: React.FC<{ onClose: () => void }> = ({ onClose }) =>
 
     </div>
   );
-};
+});

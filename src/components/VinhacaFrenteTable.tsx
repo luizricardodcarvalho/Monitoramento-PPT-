@@ -34,7 +34,7 @@ interface VinhacaFrenteTableProps {
   handleDeleteFrente: (fName: string) => void;
 }
 
-export const VinhacaFrenteTable: React.FC<VinhacaFrenteTableProps> = ({
+export const VinhacaFrenteTable = React.memo<VinhacaFrenteTableProps>(({
   frenteKey,
   activeData,
   monitoringTime,
@@ -548,5 +548,5 @@ export const VinhacaFrenteTable: React.FC<VinhacaFrenteTableProps> = ({
 
     </div>
   );
-};
+});
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import * as XLSX from 'xlsx';
 import { parseTxtContent } from '../lib/txtParser';
 import { 
@@ -108,7 +108,7 @@ interface ShiftRecord {
   status: 'TRABALHOU' | 'NÃO TRABALHOU';
 }
 
-export const GestaoAreas = ({ 
+export const GestaoAreas = React.memo(({ 
   onBack,
   selectedUsina = "Palestina",
   onAddLog
@@ -2534,4 +2534,4 @@ export const GestaoAreas = ({
 
     </div>
   );
-};
+});

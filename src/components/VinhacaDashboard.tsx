@@ -153,7 +153,7 @@ const getSeedData = (): HourlyApontamento[] => {
   });
 };
 
-export const VinhacaDashboard: React.FC<{ selectedUsina?: string }> = ({ selectedUsina = "Ariranha" }) => {
+export const VinhacaDashboard = React.memo<{ selectedUsina?: string }>(({ selectedUsina = "Ariranha" }) => {
   const [selectedDate, setSelectedDate] = useState(() => {
     return new Date().toISOString().split("T")[0];
   });
@@ -1319,4 +1319,4 @@ export const VinhacaDashboard: React.FC<{ selectedUsina?: string }> = ({ selecte
 
     </div>
   );
-};
+});

@@ -219,7 +219,7 @@ export const generateDefaultExcelData = (): ExcelPlantioRow[] => {
   return rows;
 };
 
-export const VisaoPlantio: React.FC<VisaoPlantioProps> = ({
+export const VisaoPlantio = React.memo<VisaoPlantioProps>(({
   onClose,
   lastPlantioUpdate,
   fleet,
@@ -2842,4 +2842,4 @@ export const VisaoPlantio: React.FC<VisaoPlantioProps> = ({
 
     </div>
   );
-};
+});

@@ -26,7 +26,7 @@ interface DispatchTruck {
   tempoHorario: string; // Tempo corrido ou hora estimada
 }
 
-export const VinhacaDespacho: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+export const VinhacaDespacho = React.memo<{ onClose: () => void }>(({ onClose }) => {
   // Mock initial data based exactly on the requested excel screenshot but stripped of cards/drivers
   const [trucks, setTrucks] = useState<DispatchTruck[]>(() => {
     const saved = localStorage.getItem("vinhaca_despacho_trucks");
@@ -850,4 +850,4 @@ export const VinhacaDespacho: React.FC<{ onClose: () => void }> = ({ onClose }) 
 
     </div>
   );
-};
+});
