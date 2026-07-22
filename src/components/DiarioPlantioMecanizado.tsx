@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { parseTxtContent } from '../lib/txtParser';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { 
   TrendingUp, 
   FileSpreadsheet, 

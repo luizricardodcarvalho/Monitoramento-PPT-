@@ -1111,9 +1111,9 @@ export default function App() {
     return d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
   });
 
-  // Ticking live clock interval for SmartFlow and monitoring elements
+  // Ticking live clock interval for SmartFlow and monitoring elements (optimized interval)
   useEffect(() => {
-    const timer = setInterval(() => {
+    const updateTime = () => {
       const now = new Date();
       setVinhacaLiveDateTime(now);
       
@@ -1125,8 +1125,9 @@ export default function App() {
       const hrs = now.getHours().toString().padStart(2, '0');
       const mins = now.getMinutes().toString().padStart(2, '0');
       setMonitoringTime(`${hrs}:${mins}`);
-    }, 1000);
+    };
 
+    const timer = setInterval(updateTime, 30000);
     return () => clearInterval(timer);
   }, []);
 
@@ -1614,10 +1615,6 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('ppt_dds_topics_v4', JSON.stringify(ddsTopics));
   }, [ddsTopics]);
-
-  useEffect(() => {
-    localStorage.setItem('ppt_dds_meetings', JSON.stringify(savedDdsMeetings));
-  }, [savedDdsMeetings]);
 
   useEffect(() => {
     localStorage.setItem('ppt_dds_meetings', JSON.stringify(savedDdsMeetings));

@@ -13,6 +13,21 @@ interface CacheEntry {
 const queryCache = new Map<string, CacheEntry>();
 const CACHE_TTL_MS = 5000;
 
+function pruneExpiredCache() {
+  const now = Date.now();
+  for (const [key, entry] of queryCache.entries()) {
+    if (now - entry.timestamp > CACHE_TTL_MS) {
+      queryCache.delete(key);
+    }
+  }
+  if (queryCache.size > 80) {
+    const keys = Array.from(queryCache.keys());
+    for (let i = 0; i < 20 && i < keys.length; i++) {
+      queryCache.delete(keys[i]);
+    }
+  }
+}
+
 function clearTableCache(table: string) {
   const prefix = `${table}:`;
   for (const key of queryCache.keys()) {
@@ -76,6 +91,7 @@ export async function fetchFromTable<T = any>(
       return { data: null, error: translateSupabaseError(error.message) };
     }
 
+    pruneExpiredCache();
     queryCache.set(cacheKey, { data, timestamp: Date.now() });
     return { data: data as T[], error: null };
   } catch (err: any) {

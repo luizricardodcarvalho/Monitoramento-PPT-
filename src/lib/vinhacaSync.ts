@@ -38,10 +38,11 @@ export function registerVinhacaActivity(activity: {
     const seconds = String(now.getSeconds()).padStart(2, '0');
     const timestampStr = `${day}/${month}/${year} às ${hours}:${minutes}:${seconds}`;
     
+    const currentUser = localStorage.getItem('ppt_user_email') || localStorage.getItem('ppt_username') || "Operador CCO";
     const newEntry: VinhacaHistoricEntry = {
       id: "V-" + Math.random().toString(36).substring(2, 9).toUpperCase(),
       timestamp: timestampStr,
-      usuario: "luizricardocarvalhod@gmail.com", // Dynamic human label/user
+      usuario: currentUser,
       ...activity
     };
     
