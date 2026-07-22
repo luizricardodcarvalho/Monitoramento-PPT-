@@ -82,24 +82,33 @@ import {
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { motion, AnimatePresence } from 'motion/react';
-import { VinhacaFrenteTable } from './components/VinhacaFrenteTable';
-import { VinhacaPainel } from './components/VinhacaPainel';
-import { VinhacaDespacho } from './components/VinhacaDespacho';
-import { VinhacaApontamentos } from './components/VinhacaApontamentos';
-import { VinhacaDashboard } from './components/VinhacaDashboard';
-import { VinhacaNiveis } from './components/VinhacaNiveis';
-import { VinhacaFechamento } from './components/VinhacaFechamento';
-import { VinhacaHistorico } from './components/VinhacaHistorico';
-import { CoazitoChat } from './components/CoazitoChat';
 import { SmartFlowLogo, VinhacaLogo, ColomboLogo } from './components/Logos';
-import { VisaoPlantio } from './components/VisaoPlantio';
-import { GestaoAreas } from './components/GestaoAreas';
-import { GestaoAreasHistorico } from './components/GestaoAreasHistorico';
-import DiarioCoaProducoes from './components/DiarioCoaProducoes';
-import DiarioPlantioMecanizado from './components/DiarioPlantioMecanizado';
-import Pluviometria from './components/Pluviometria';
 import { INITIAL_DDS_TOPICS, DdsTopic } from './data/ddsTopicsData';
 import { LoginScreen } from './components/LoginScreen';
+
+// Lazy-loaded sub-modules for bundle splitting and faster initial load
+const VinhacaFrenteTable = React.lazy(() => import('./components/VinhacaFrenteTable').then(m => ({ default: m.VinhacaFrenteTable })));
+const VinhacaPainel = React.lazy(() => import('./components/VinhacaPainel').then(m => ({ default: m.VinhacaPainel })));
+const VinhacaDespacho = React.lazy(() => import('./components/VinhacaDespacho').then(m => ({ default: m.VinhacaDespacho })));
+const VinhacaApontamentos = React.lazy(() => import('./components/VinhacaApontamentos').then(m => ({ default: m.VinhacaApontamentos })));
+const VinhacaDashboard = React.lazy(() => import('./components/VinhacaDashboard').then(m => ({ default: m.VinhacaDashboard })));
+const VinhacaNiveis = React.lazy(() => import('./components/VinhacaNiveis').then(m => ({ default: m.VinhacaNiveis })));
+const VinhacaFechamento = React.lazy(() => import('./components/VinhacaFechamento').then(m => ({ default: m.VinhacaFechamento })));
+const VinhacaHistorico = React.lazy(() => import('./components/VinhacaHistorico').then(m => ({ default: m.VinhacaHistorico })));
+const CoazitoChat = React.lazy(() => import('./components/CoazitoChat').then(m => ({ default: m.CoazitoChat })));
+const VisaoPlantio = React.lazy(() => import('./components/VisaoPlantio').then(m => ({ default: m.VisaoPlantio })));
+const GestaoAreas = React.lazy(() => import('./components/GestaoAreas').then(m => ({ default: m.GestaoAreas })));
+const GestaoAreasHistorico = React.lazy(() => import('./components/GestaoAreasHistorico').then(m => ({ default: m.GestaoAreasHistorico })));
+const DiarioCoaProducoes = React.lazy(() => import('./components/DiarioCoaProducoes'));
+const DiarioPlantioMecanizado = React.lazy(() => import('./components/DiarioPlantioMecanizado'));
+const Pluviometria = React.lazy(() => import('./components/Pluviometria'));
+
+const ModuleLoader = () => (
+  <div className="flex flex-col items-center justify-center p-12 text-gray-400 space-y-3 min-h-[300px]">
+    <div className="w-8 h-8 border-4 border-[#5adc6a] border-t-transparent rounded-full animate-spin" />
+    <span className="text-xs font-black uppercase tracking-widest text-gray-400">Carregando Módulo...</span>
+  </div>
+);
 
 // Helper for tailwind classes
 function cn(...inputs: ClassValue[]) {
@@ -614,7 +623,24 @@ const generateHtmlReport = (data: any[], filename: string) => {
 </html>`;
 };
 
+import { supabase } from './lib/supabase';
+import { 
+  isSupabaseReady, 
+  getFrentesFromSupabase, 
+  addFrenteToSupabase, 
+  updateFrenteInSupabase, 
+  deleteFrenteFromSupabase, 
+  getFleetFromSupabase, 
+  addFleetToSupabase, 
+  updateFleetInSupabase, 
+  deleteFleetFromSupabase, 
+  getLogsFromSupabase, 
+  addLogToSupabase,
+  signOutUserWithSupabase
+} from './lib/supabaseService';
+
 export default function App() {
+  const [isAuthChecking, setIsAuthChecking] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     return localStorage.getItem('ppt_is_logged_in') === 'true';
   });
@@ -628,6 +654,41 @@ export default function App() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
     return localStorage.getItem('ppt_is_sidebar_collapsed') === 'true';
   });
+  const [isSupabaseSyncing, setIsSupabaseSyncing] = useState(false);
+
+  // Supabase Auth Active Session Listener
+  useEffect(() => {
+    let isMounted = true;
+
+    if (isSupabaseReady()) {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (!isMounted) return;
+        if (session?.user) {
+          setIsLoggedIn(true);
+          localStorage.setItem('ppt_is_logged_in', 'true');
+        }
+        setIsAuthChecking(false);
+      });
+
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+        if (!isMounted) return;
+        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+          setIsLoggedIn(true);
+          localStorage.setItem('ppt_is_logged_in', 'true');
+        } else if (event === 'SIGNED_OUT') {
+          setIsLoggedIn(false);
+          localStorage.removeItem('ppt_is_logged_in');
+        }
+      });
+
+      return () => {
+        isMounted = false;
+        subscription.unsubscribe();
+      };
+    } else {
+      setIsAuthChecking(false);
+    }
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('ppt_is_dark_mode', isDarkMode ? 'true' : 'false');
@@ -646,6 +707,74 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('ppt_is_sidebar_collapsed', isSidebarCollapsed ? 'true' : 'false');
   }, [isSidebarCollapsed]);
+
+  // Initial Supabase Data Fetch
+  useEffect(() => {
+    const syncFromSupabase = async () => {
+      if (!isSupabaseReady()) return;
+      setIsSupabaseSyncing(true);
+      try {
+        const [frentesRes, fleetRes, logsRes] = await Promise.all([
+          getFrentesFromSupabase(),
+          getFleetFromSupabase(),
+          getLogsFromSupabase()
+        ]);
+
+        if (frentesRes.data && frentesRes.data.length > 0) {
+          const mappedFrentes = frentesRes.data.map((f: any) => ({
+            id: f.id,
+            frente: f.frente,
+            nome: f.nome || 'Plantio/Mecanizado',
+            fazenda: f.fazenda || '',
+            cidade: f.cidade || 'Ariranha',
+            quadras: f.quadras || 0,
+            talhoes: f.talhoes || 0,
+            gestor: f.gestor || '',
+            status: f.status || 'Trabalhando',
+            obs: f.obs || '',
+            updatedAt: f.updated_at ? new Date(f.updated_at).toLocaleString('pt-BR') : new Date().toLocaleString('pt-BR')
+          }));
+          setFrentes(mappedFrentes);
+        }
+
+        if (fleetRes.data && fleetRes.data.length > 0) {
+          const mappedFleet = fleetRes.data.map((fl: any) => ({
+            id: fl.id,
+            unidade: fl.unidade,
+            tipo: fl.tipo,
+            modelo: fl.modelo || '',
+            prefixo: fl.prefixo,
+            status: fl.status || 'Reserva',
+            updatedAt: fl.updated_at ? new Date(fl.updated_at).toLocaleString('pt-BR') : new Date().toLocaleString('pt-BR'),
+            hourlyData: fl.hourly_data || Array(24).fill(fl.status === 'Reserva' ? 'Reserva' : 'Trabalhando')
+          }));
+          setFleet(mappedFleet);
+        }
+
+        if (logsRes.data && logsRes.data.length > 0) {
+          const mappedLogs = logsRes.data.map((l: any) => ({
+            id: l.id,
+            type: l.type,
+            event: l.event,
+            detail: l.detail || '',
+            time: l.time,
+            user: l.user_email || 'Centro de Operações Agricola',
+            city: l.city || 'Geral'
+          }));
+          setAllLogs(mappedLogs);
+        }
+
+        showToast('Dados sincronizados com o Supabase!', 'success');
+      } catch (err) {
+        console.warn('Erro ao sincronizar com Supabase:', err);
+      } finally {
+        setIsSupabaseSyncing(false);
+      }
+    };
+
+    syncFromSupabase();
+  }, []);
+
 
   const [activeMonitoramentoSubTab, setActiveMonitoramentoSubTab] = useState('Frentes');
 
@@ -1053,16 +1182,35 @@ export default function App() {
     if (frente && confirm(`Deseja realmente excluir a Frente ${frente.frente}?`)) {
       const now = new Date().toLocaleString('pt-BR');
       
+      if (isSupabaseReady()) {
+        deleteFrenteFromSupabase(id).then(res => {
+          if (res.error) showToast(`Erro Supabase ao excluir frente: ${res.error}`, 'error');
+          else showToast(`Frente ${frente.frente} excluída no Supabase!`, 'success');
+        });
+      }
+
+      const logDetail = `Frente ${frente.frente} (${frente.nome}) | Fazenda: ${frente.fazenda} | Gestor: ${frente.gestor} | Status Final: ${frente.status}`;
+
       // Add to Excluídos log
       setAllLogs(prev => [{
         id: Date.now(),
         type: 'Excluídos',
         event: 'Frente Excluída',
-        detail: `Frente ${frente.frente} (${frente.nome}) | Fazenda: ${frente.fazenda} | Gestor: ${frente.gestor} | Status Final: ${frente.status}`,
+        detail: logDetail,
         time: now,
         user: 'Centro de Operações Agricola',
         city: frente.cidade
       }, ...prev]);
+
+      if (isSupabaseReady()) {
+        addLogToSupabase({
+          type: 'Excluídos',
+          event: 'Frente Excluída',
+          detail: logDetail,
+          time: now,
+          city: frente.cidade
+        });
+      }
 
       // Remove from active frentes
       setFrentes(prev => prev.filter(f => f.id !== id));
@@ -2125,16 +2273,34 @@ export default function App() {
     });
 
     if (frenteRef) {
+      if (isSupabaseReady()) {
+        updateFrenteInSupabase(id, { status: newStatus }).then(res => {
+          if (res.error) showToast(`Erro ao atualizar status no Supabase: ${res.error}`, 'error');
+        });
+      }
+
       setLastGlobalUpdate(now);
+      const logDetail = `Frente ${frenteRef.frente} (${frenteRef.nome}) mudou de [${frenteRef.status}] para [${newStatus}]`;
+
       setAllLogs(prev => [{
         id: Date.now(),
         type: 'Status',
         event: 'Alteração de Status',
-        detail: `Frente ${frenteRef.frente} (${frenteRef.nome}) mudou de [${frenteRef.status}] para [${newStatus}]`,
+        detail: logDetail,
         time: now,
         user: 'Centro de Operações Agricola',
         city: selectedUsina as string
       }, ...prev]);
+
+      if (isSupabaseReady()) {
+        addLogToSupabase({
+          type: 'Status',
+          event: 'Alteração de Status',
+          detail: logDetail,
+          time: now,
+          city: selectedUsina as string
+        });
+      }
     }
   };
 
@@ -2160,31 +2326,88 @@ export default function App() {
 
       setFrentes(prev => prev.map(f => f.id === editingFrenteId ? { ...f, ...newEntry } : f));
       setLastGlobalUpdate(now);
-      
+
+      if (isSupabaseReady()) {
+        updateFrenteInSupabase(editingFrenteId, {
+          frente: newEntry.frente,
+          nome: newEntry.nome,
+          fazenda: newEntry.fazenda,
+          cidade: newEntry.cidade,
+          quadras: newEntry.quadras,
+          talhoes: newEntry.talhoes,
+          gestor: newEntry.gestor,
+          status: newEntry.status
+        }).then(res => {
+          if (res.error) showToast(`Erro Supabase: ${res.error}`, 'error');
+          else showToast(`Frente ${newEntry.frente} atualizada no Supabase!`, 'success');
+        });
+      }
+
+      const logDetail = statusChanged 
+        ? `Frente ${newEntry.frente} (${newEntry.nome}) alterou status para [${newEntry.status}] | Fazenda: ${newEntry.fazenda}`
+        : `Frente ${newEntry.frente} (${newEntry.nome}) atualizada | Gestor: ${newEntry.gestor} | Fazenda: ${newEntry.fazenda}`;
+
       setAllLogs(prev => [{
         id: Date.now(),
         type: 'Status',
         event: statusChanged ? 'Status Alterado' : 'Dados Atualizados',
-        detail: statusChanged 
-          ? `Frente ${newEntry.frente} (${newEntry.nome}) alterou status para [${newEntry.status}] | Fazenda: ${newEntry.fazenda}`
-          : `Frente ${newEntry.frente} (${newEntry.nome}) atualizada | Gestor: ${newEntry.gestor} | Fazenda: ${newEntry.fazenda}`,
+        detail: logDetail,
         time: now,
         user: 'Centro de Operações Agricola',
         city: selectedUsina as string
       }, ...prev]);
+
+      if (isSupabaseReady()) {
+        addLogToSupabase({
+          type: 'Status',
+          event: statusChanged ? 'Status Alterado' : 'Dados Atualizados',
+          detail: logDetail,
+          time: now,
+          city: selectedUsina as string
+        });
+      }
     } else {
       const id = Date.now();
       setFrentes(prev => [...prev, { id, ...newEntry }]);
       setLastGlobalUpdate(now);
+
+      if (isSupabaseReady()) {
+        addFrenteToSupabase({
+          frente: newEntry.frente,
+          nome: newEntry.nome,
+          fazenda: newEntry.fazenda,
+          cidade: newEntry.cidade,
+          quadras: newEntry.quadras,
+          talhoes: newEntry.talhoes,
+          gestor: newEntry.gestor,
+          status: newEntry.status
+        }).then(res => {
+          if (res.error) showToast(`Erro Supabase: ${res.error}`, 'error');
+          else showToast(`Frente ${newEntry.frente} cadastrada no Supabase!`, 'success');
+        });
+      }
+
+      const logDetail = `Frente ${newEntry.frente} (${newEntry.nome}) | Fazenda: ${newEntry.fazenda} | Gestor: ${newEntry.gestor} | Estrutura: ${newEntry.quadras} Quadras / ${newEntry.talhoes} Talhões`;
+
       setAllLogs(prev => [{
         id: id,
         type: 'Cadastros',
         event: 'Nova frente cadastrada',
-        detail: `Frente ${newEntry.frente} (${newEntry.nome}) | Fazenda: ${newEntry.fazenda} | Gestor: ${newEntry.gestor} | Estrutura: ${newEntry.quadras} Quadras / ${newEntry.talhoes} Talhões`,
+        detail: logDetail,
         time: now,
         user: 'Centro de Operações Agricola',
         city: selectedUsina as string
       }, ...prev]);
+
+      if (isSupabaseReady()) {
+        addLogToSupabase({
+          type: 'Cadastros',
+          event: 'Nova frente cadastrada',
+          detail: logDetail,
+          time: now,
+          city: selectedUsina as string
+        });
+      }
     }
     setIsFrenteModalOpen(false);
   };
@@ -2203,16 +2426,31 @@ export default function App() {
       setFrentes(frentes.map(f => f.id === currentFrenteId ? { ...f, obs: tempObs, updatedAt: now } : f));
       setLastGlobalUpdate(now);
 
+      if (isSupabaseReady()) {
+        updateFrenteInSupabase(currentFrenteId, { obs: tempObs });
+      }
+
       if (frente) {
+        const logDetail = `Frente ${frente.frente} (${frente.nome}) | Nova Obs: "${tempObs || 'Vazia'}"`;
         setAllLogs(prev => [{
           id: Date.now(),
           type: 'Observações',
           event: 'Observação Adicionada',
-          detail: `Frente ${frente.frente} (${frente.nome}) | Nova Obs: "${tempObs || 'Vazia'}"`,
+          detail: logDetail,
           time: now,
           user: 'Centro de Operações Agricola',
           city: selectedUsina as string
         }, ...prev]);
+
+        if (isSupabaseReady()) {
+          addLogToSupabase({
+            type: 'Observações',
+            event: 'Observação Adicionada',
+            detail: logDetail,
+            time: now,
+            city: selectedUsina as string
+          });
+        }
       }
 
       setIsObsModalOpen(false);
@@ -2223,17 +2461,39 @@ export default function App() {
   const removeFrente = (frente: any) => {
     if (confirm(`Deseja excluir a frente ${frente.frente}?`)) {
       const now = new Date().toLocaleString('pt-BR');
+      
+      if (isSupabaseReady()) {
+        deleteFrenteFromSupabase(frente.id).then(res => {
+          if (res.error) showToast(`Erro Supabase: ${res.error}`, 'error');
+          else showToast(`Frente ${frente.frente} excluída no Supabase!`, 'success');
+        });
+      }
+
       setFrentes(prev => prev.filter(f => f.id !== frente.id));
       setLastGlobalUpdate(now);
+
+      const logDetail = `Frente ${frente.frente} (${frente.nome}) | Fazenda: ${frente.fazenda} | Gestor: ${frente.gestor} | Estrutura: ${frente.quadras} Quadras / ${frente.talhoes} Talhões`;
+
       setAllLogs(prev => [{
         id: Date.now(),
         type: 'Excluídos',
         event: 'Frente Removida permanentemente',
-        detail: `Frente ${frente.frente} (${frente.nome}) | Fazenda: ${frente.fazenda} | Gestor: ${frente.gestor} | Estrutura: ${frente.quadras} Quadras / ${frente.talhoes} Talhões`,
+        detail: logDetail,
         time: now,
         user: 'Centro de Operações Agricola',
         city: selectedUsina as string
       }, ...prev]);
+
+      if (isSupabaseReady()) {
+        addLogToSupabase({
+          type: 'Excluídos',
+          event: 'Frente Removida permanentemente',
+          detail: logDetail,
+          time: now,
+          city: selectedUsina as string
+        });
+      }
+
       return true;
     }
     return false;
@@ -2681,6 +2941,17 @@ export default function App() {
     `}</style>
   );
 
+  if (isAuthChecking) {
+    return (
+      <div data-theme={theme} className="min-h-screen w-full bg-[#011a0c] flex items-center justify-center text-white font-bold">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-4 border-[#5adc6a] border-t-transparent rounded-full animate-spin" />
+          <span className="text-xs uppercase tracking-widest text-gray-300">Verificando Autenticação...</span>
+        </div>
+      </div>
+    );
+  }
+
   if (!isLoggedIn) {
     return (
       <div data-theme={theme} className="contents">
@@ -2825,9 +3096,9 @@ export default function App() {
         {/* LOGOUT SECURE ACTION */}
         <div className="p-4 border-t border-white/10 shrink-0 bg-black/20">
           <button
-            onClick={() => {
+            onClick={async () => {
               if (confirm('Deseja realmente encerrar sua sessão no sistema?')) {
-                localStorage.removeItem('ppt_is_logged_in');
+                await signOutUserWithSupabase();
                 setIsLoggedIn(false);
               }
             }}
@@ -2927,6 +3198,7 @@ export default function App() {
           className="flex-1 p-4 md:p-8 space-y-4 md:space-y-6 overflow-y-auto w-full"
           onClick={() => setFilterStatus(null)}
         >
+          <React.Suspense fallback={<ModuleLoader />}>
           {activeTab === 'Monitoramento' && (
             <>
               {/* SUB-TABS BAR FOR MONITORAMENTO (FRENTES VS DASHBOARD) */}
@@ -6748,6 +7020,7 @@ export default function App() {
               />
             </div>
           )}
+          </React.Suspense>
         </div>
         
         {/* FOOTER INFO */}

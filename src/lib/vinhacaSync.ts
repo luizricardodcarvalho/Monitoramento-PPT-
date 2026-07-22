@@ -3,6 +3,8 @@
  * Consolidates actions from Central de Despacho, Apontamentos, Níveis, and Fechamentos.
  */
 
+import { addVinhacaHistoricoToSupabase } from './supabaseService';
+
 export interface VinhacaHistoricEntry {
   id: string;
   timestamp: string;
@@ -14,7 +16,7 @@ export interface VinhacaHistoricEntry {
 }
 
 /**
- * Registers an operational change/action in the centralized Vinhaça History Database (vinhaca_historico_db).
+ * Registers an operational change/action in the centralized Vinhaça History Database (vinhaca_historico_db & Supabase).
  */
 export function registerVinhacaActivity(activity: {
   origem: 'Despacho' | 'Apontamento' | 'Níveis' | 'Fechamento';
@@ -45,6 +47,17 @@ export function registerVinhacaActivity(activity: {
     
     arr.unshift(newEntry);
     localStorage.setItem("vinhaca_historico_db", JSON.stringify(arr));
+
+    // Async sync to Supabase
+    addVinhacaHistoricoToSupabase({
+      id: newEntry.id,
+      timestamp: newEntry.timestamp,
+      origem: newEntry.origem,
+      tipo_acao: newEntry.tipoAcao,
+      caminhao: newEntry.caminhao || null,
+      detalhes: newEntry.detalhes,
+      user_email: newEntry.usuario
+    }).catch(err => console.warn('Supabase vinhaca_historico sync warning:', err));
     
     // Notify all components in the active React session
     window.dispatchEvent(new Event("vinhaca_historico_changed"));

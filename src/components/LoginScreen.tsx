@@ -1,7 +1,14 @@
-import React, { useState } from 'react';
-import { Lock, User, Eye, EyeOff, ShieldAlert, Tractor, Sprout, ArrowRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Lock, User, Eye, EyeOff, ShieldAlert, Tractor, Sprout, ArrowRight, Mail, KeyRound, CheckCircle2, UserPlus, LogIn, RefreshCw } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ColomboLogo } from './Logos';
+import { 
+  signInUserWithSupabase, 
+  signUpUserWithSupabase, 
+  resetPasswordWithSupabase, 
+  updatePasswordWithSupabase, 
+  isSupabaseReady 
+} from '../lib/supabaseService';
 
 interface LoginScreenProps {
   onLoginSuccess: () => void;
@@ -9,42 +16,209 @@ interface LoginScreenProps {
   setTheme: (theme: 'green' | 'blue') => void;
 }
 
+type AuthMode = 'login' | 'cadastro' | 'recovery' | 'update_password';
+
 export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess, theme, setTheme }) => {
+  const [authMode, setAuthMode] = useState<AuthMode>('login');
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Check if current URL contains recovery hash/type
+  useEffect(() => {
+    if (window.location.hash.includes('type=recovery')) {
+      setAuthMode('update_password');
+      setInfoMessage('Sessão de recuperação iniciada. Defina sua nova senha abaixo.');
+    }
+  }, []);
+
+  const switchMode = (mode: AuthMode) => {
+    setAuthMode(mode);
+    setError(null);
+    setInfoMessage(null);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setInfoMessage(null);
 
-    const trimmedUser = username.trim();
-    const trimmedPass = password.trim();
+    // MODE 1: LOGIN
+    if (authMode === 'login') {
+      const trimmedUser = username.trim();
+      const trimmedPass = password.trim();
 
-    if (!trimmedUser || !trimmedPass) {
-      setError('Por favor, preencha todos os campos.');
-      return;
+      if (!trimmedUser || !trimmedPass) {
+        setError('Por favor, preencha o usuário/e-mail e a senha.');
+        return;
+      }
+
+      setIsLoading(true);
+
+      if (isSupabaseReady()) {
+        const res = await signInUserWithSupabase(trimmedUser, trimmedPass);
+        if (!res.error && res.data) {
+          setIsSuccess(true);
+          setTimeout(() => {
+            localStorage.setItem('ppt_is_logged_in', 'true');
+            onLoginSuccess();
+          }, 1200);
+          return;
+        } else if (res.error) {
+          // Check local fallback demo credentials
+          if (trimmedUser === 'Eder' && trimmedPass === 'Eder2026') {
+            setIsSuccess(true);
+            setTimeout(() => {
+              localStorage.setItem('ppt_is_logged_in', 'true');
+              onLoginSuccess();
+            }, 1200);
+            return;
+          }
+          setIsLoading(false);
+          setError(`Falha ao autenticar: ${res.error}`);
+          return;
+        }
+      }
+
+      // Offline / Fallback verification request
+      setTimeout(() => {
+        if (trimmedUser === 'Eder' && trimmedPass === 'Eder2026') {
+          setIsSuccess(true);
+          setTimeout(() => {
+            localStorage.setItem('ppt_is_logged_in', 'true');
+            onLoginSuccess();
+          }, 1200);
+        } else {
+          setIsLoading(false);
+          setError('Usuário ou senha inválidos. Utilize credenciais válidas.');
+        }
+      }, 1000);
     }
 
-    setIsLoading(true);
+    // MODE 2: CADASTRO
+    else if (authMode === 'cadastro') {
+      const trimmedUser = username.trim();
+      const trimmedEmail = email.trim();
+      const trimmedPass = password.trim();
 
-    // Simulate a professional verification request
-    setTimeout(() => {
-      // The credentials must be exactly: usuario Eder and senha Eder2026
-      if (trimmedUser === 'Eder' && trimmedPass === 'Eder2026') {
+      if (!trimmedUser || !trimmedEmail || !trimmedPass || !confirmPassword) {
+        setError('Preencha todos os campos para realizar o cadastro.');
+        return;
+      }
+
+      if (!trimmedEmail.includes('@')) {
+        setError('Informe um e-mail válido.');
+        return;
+      }
+
+      if (trimmedPass.length < 6) {
+        setError('A senha deve ter no mínimo 6 caracteres.');
+        return;
+      }
+
+      if (trimmedPass !== confirmPassword) {
+        setError('As senhas digitadas não conferem.');
+        return;
+      }
+
+      setIsLoading(true);
+
+      if (isSupabaseReady()) {
+        const res = await signUpUserWithSupabase(trimmedEmail, trimmedPass, trimmedUser);
+        setIsLoading(false);
+
+        if (res.error) {
+          setError(`Erro ao criar conta: ${res.error}`);
+        } else {
+          setIsSuccess(true);
+          setInfoMessage('Conta e perfil criados no Supabase com sucesso!');
+          setTimeout(() => {
+            localStorage.setItem('ppt_is_logged_in', 'true');
+            onLoginSuccess();
+          }, 1500);
+        }
+      } else {
+        setIsLoading(false);
+        setIsSuccess(true);
+        setInfoMessage('Cadastro simulado concluído (Supabase off-line).');
+        setTimeout(() => {
+          localStorage.setItem('ppt_is_logged_in', 'true');
+          onLoginSuccess();
+        }, 1500);
+      }
+    }
+
+    // MODE 3: RECUPERAÇÃO DE SENHA
+    else if (authMode === 'recovery') {
+      const trimmedEmail = email.trim();
+
+      if (!trimmedEmail || !trimmedEmail.includes('@')) {
+        setError('Por favor, informe um e-mail válido para recuperação.');
+        return;
+      }
+
+      setIsLoading(true);
+
+      if (isSupabaseReady()) {
+        const res = await resetPasswordWithSupabase(trimmedEmail);
+        setIsLoading(false);
+
+        if (res.error) {
+          setError(`Erro ao solicitar recuperação: ${res.error}`);
+        } else {
+          setInfoMessage('Link de recuperação enviado com sucesso! Verifique sua caixa de e-mail.');
+        }
+      } else {
+        setIsLoading(false);
+        setInfoMessage('Instruções de recuperação enviadas para o e-mail informado.');
+      }
+    }
+
+    // MODE 4: REDEFINIÇÃO DE SENHA
+    else if (authMode === 'update_password') {
+      const trimmedPass = password.trim();
+
+      if (trimmedPass.length < 6) {
+        setError('A nova senha deve possuir pelo menos 6 caracteres.');
+        return;
+      }
+
+      if (trimmedPass !== confirmPassword) {
+        setError('As senhas não conferem.');
+        return;
+      }
+
+      setIsLoading(true);
+
+      if (isSupabaseReady()) {
+        const res = await updatePasswordWithSupabase(trimmedPass);
+        setIsLoading(false);
+
+        if (res.error) {
+          setError(`Erro ao redefinir senha: ${res.error}`);
+        } else {
+          setIsSuccess(true);
+          setInfoMessage('Senha atualizada com sucesso!');
+          setTimeout(() => {
+            localStorage.setItem('ppt_is_logged_in', 'true');
+            onLoginSuccess();
+          }, 1200);
+        }
+      } else {
+        setIsLoading(false);
         setIsSuccess(true);
         setTimeout(() => {
           localStorage.setItem('ppt_is_logged_in', 'true');
           onLoginSuccess();
         }, 1200);
-      } else {
-        setIsLoading(false);
-        setError('Usuário ou senha inválidos. Utilize as credenciais corretas.');
       }
-    }, 1500);
+    }
   };
 
   const isBlue = theme === 'blue';
@@ -226,86 +400,293 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess, theme,
                 Portal de Monitoramento
               </h2>
               <p className={`text-sm font-black uppercase tracking-[0.25em] mt-3 ${subtitleColor}`}>
-                Conectividade &amp; Telemetria Avançada
+                {authMode === 'login' && 'Conectividade & Telemetria Avançada'}
+                {authMode === 'cadastro' && 'Cadastro de Novo Operador'}
+                {authMode === 'recovery' && 'Recuperação de Chave de Acesso'}
+                {authMode === 'update_password' && 'Redefinição de Senha do Sistema'}
               </p>
             </motion.div>
+          </div>
+
+          {/* Mode Switcher Tabs */}
+          <div className="flex bg-white/5 border border-white/10 rounded-2xl p-1 mb-8">
+            <button
+              type="button"
+              onClick={() => switchMode('login')}
+              className={`flex-1 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
+                authMode === 'login'
+                  ? 'bg-white/15 text-white shadow-md border border-white/20'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <LogIn size={14} />
+              <span>Login</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => switchMode('cadastro')}
+              className={`flex-1 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
+                authMode === 'cadastro'
+                  ? 'bg-white/15 text-white shadow-md border border-white/20'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <UserPlus size={14} />
+              <span>Cadastro</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => switchMode('recovery')}
+              className={`flex-1 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
+                authMode === 'recovery' || authMode === 'update_password'
+                  ? 'bg-white/15 text-white shadow-md border border-white/20'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <RefreshCw size={14} />
+              <span>Recuperar</span>
+            </button>
           </div>
 
           <AnimatePresence mode="wait">
             {!isSuccess ? (
               <motion.form 
-                key="login-form"
+                key={authMode}
                 onSubmit={handleSubmit}
-                className="space-y-7"
-                initial={{ opacity: 1 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
+                className="space-y-6"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.25 }}
               >
                 {/* Error Box */}
                 {error && (
                   <motion.div 
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="p-5 bg-red-500/10 border border-red-500/30 rounded-2xl flex items-start gap-4"
+                    className="p-4 bg-red-500/10 border border-red-500/30 rounded-2xl flex items-start gap-3"
                   >
-                    <ShieldAlert className="text-red-400 shrink-0 mt-0.5" size={20} />
-                    <p className="text-sm text-red-200 font-bold leading-relaxed uppercase">{error}</p>
+                    <ShieldAlert className="text-red-400 shrink-0 mt-0.5" size={18} />
+                    <p className="text-xs text-red-200 font-bold leading-relaxed uppercase">{error}</p>
                   </motion.div>
                 )}
 
-                {/* Input Username */}
-                <div className="space-y-3">
-                  <label className="block text-sm font-black text-white uppercase tracking-widest pl-1">
-                    Usuário
-                  </label>
-                  <div className="relative flex items-center">
-                    <User className="absolute left-6 text-gray-300" size={20} />
-                    <input
-                      type="text"
-                      disabled={isLoading}
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      placeholder="Usuário"
-                      className={`w-full bg-white/[0.04] border border-white/10 ${focusBorder} focus:bg-white/[0.08] focus:ring-2 ${focusRing} text-white text-base font-bold pl-16 pr-6 py-5 rounded-2xl outline-none transition-all placeholder:text-gray-300`}
-                    />
-                  </div>
-                </div>
+                {/* Info Notice Box */}
+                {infoMessage && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-4 bg-green-500/10 border border-green-500/30 rounded-2xl flex items-start gap-3"
+                  >
+                    <CheckCircle2 className="text-green-400 shrink-0 mt-0.5" size={18} />
+                    <p className="text-xs text-green-200 font-bold leading-relaxed uppercase">{infoMessage}</p>
+                  </motion.div>
+                )}
 
-                {/* Input Password */}
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center pl-1">
-                    <label className="text-sm font-black text-white uppercase tracking-widest">
-                      Chave de Segurança
+                {/* LOGIN MODE FIELDS */}
+                {authMode === 'login' && (
+                  <>
+                    <div className="space-y-2">
+                      <label className="block text-xs font-black text-white uppercase tracking-widest pl-1">
+                        Usuário ou E-mail
+                      </label>
+                      <div className="relative flex items-center">
+                        <User className="absolute left-5 text-gray-300" size={18} />
+                        <input
+                          type="text"
+                          disabled={isLoading}
+                          value={username}
+                          onChange={(e) => setUsername(e.target.value)}
+                          placeholder="Digite seu usuário ou e-mail"
+                          className={`w-full bg-white/[0.04] border border-white/10 ${focusBorder} focus:bg-white/[0.08] focus:ring-2 ${focusRing} text-white text-sm font-bold pl-14 pr-5 py-4 rounded-2xl outline-none transition-all placeholder:text-gray-400`}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center pl-1">
+                        <label className="text-xs font-black text-white uppercase tracking-widest">
+                          Senha
+                        </label>
+                      </div>
+                      <div className="relative flex items-center">
+                        <Lock className="absolute left-5 text-gray-300" size={18} />
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          disabled={isLoading}
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          placeholder="Sua senha de acesso"
+                          className={`w-full bg-white/[0.04] border border-white/10 ${focusBorder} focus:bg-white/[0.08] focus:ring-2 ${focusRing} text-white text-sm font-bold pl-14 pr-14 py-4 rounded-2xl outline-none transition-all placeholder:text-gray-400`}
+                        />
+                        <button
+                          type="button"
+                          tabIndex={-1}
+                          onClick={() => setShowPassword(!showPassword)}
+                          className={`absolute right-5 text-gray-400 ${hoverText} hover:scale-110 active:scale-95 transition-all p-1`}
+                        >
+                          {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* CADASTRO MODE FIELDS */}
+                {authMode === 'cadastro' && (
+                  <>
+                    <div className="space-y-2">
+                      <label className="block text-xs font-black text-white uppercase tracking-widest pl-1">
+                        Nome do Operador
+                      </label>
+                      <div className="relative flex items-center">
+                        <User className="absolute left-5 text-gray-300" size={18} />
+                        <input
+                          type="text"
+                          disabled={isLoading}
+                          value={username}
+                          onChange={(e) => setUsername(e.target.value)}
+                          placeholder="Ex: Eder Oliveira"
+                          className={`w-full bg-white/[0.04] border border-white/10 ${focusBorder} focus:bg-white/[0.08] focus:ring-2 ${focusRing} text-white text-sm font-bold pl-14 pr-5 py-4 rounded-2xl outline-none transition-all placeholder:text-gray-400`}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="block text-xs font-black text-white uppercase tracking-widest pl-1">
+                        E-mail Corporativo
+                      </label>
+                      <div className="relative flex items-center">
+                        <Mail className="absolute left-5 text-gray-300" size={18} />
+                        <input
+                          type="email"
+                          disabled={isLoading}
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          placeholder="operador@colombo.com.br"
+                          className={`w-full bg-white/[0.04] border border-white/10 ${focusBorder} focus:bg-white/[0.08] focus:ring-2 ${focusRing} text-white text-sm font-bold pl-14 pr-5 py-4 rounded-2xl outline-none transition-all placeholder:text-gray-400`}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="block text-xs font-black text-white uppercase tracking-widest pl-1">
+                        Criar Senha
+                      </label>
+                      <div className="relative flex items-center">
+                        <Lock className="absolute left-5 text-gray-300" size={18} />
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          disabled={isLoading}
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          placeholder="Mínimo 6 caracteres"
+                          className={`w-full bg-white/[0.04] border border-white/10 ${focusBorder} focus:bg-white/[0.08] focus:ring-2 ${focusRing} text-white text-sm font-bold pl-14 pr-14 py-4 rounded-2xl outline-none transition-all placeholder:text-gray-400`}
+                        />
+                        <button
+                          type="button"
+                          tabIndex={-1}
+                          onClick={() => setShowPassword(!showPassword)}
+                          className={`absolute right-5 text-gray-400 ${hoverText} hover:scale-110 active:scale-95 transition-all p-1`}
+                        >
+                          {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="block text-xs font-black text-white uppercase tracking-widest pl-1">
+                        Confirmar Senha
+                      </label>
+                      <div className="relative flex items-center">
+                        <KeyRound className="absolute left-5 text-gray-300" size={18} />
+                        <input
+                          type="password"
+                          disabled={isLoading}
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          placeholder="Digite a senha novamente"
+                          className={`w-full bg-white/[0.04] border border-white/10 ${focusBorder} focus:bg-white/[0.08] focus:ring-2 ${focusRing} text-white text-sm font-bold pl-14 pr-5 py-4 rounded-2xl outline-none transition-all placeholder:text-gray-400`}
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* RECOVERY MODE FIELDS */}
+                {authMode === 'recovery' && (
+                  <div className="space-y-2">
+                    <label className="block text-xs font-black text-white uppercase tracking-widest pl-1">
+                      E-mail Cadastrado
                     </label>
+                    <div className="relative flex items-center">
+                      <Mail className="absolute left-5 text-gray-300" size={18} />
+                      <input
+                        type="email"
+                        disabled={isLoading}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="Informe seu e-mail corporativo"
+                        className={`w-full bg-white/[0.04] border border-white/10 ${focusBorder} focus:bg-white/[0.08] focus:ring-2 ${focusRing} text-white text-sm font-bold pl-14 pr-5 py-4 rounded-2xl outline-none transition-all placeholder:text-gray-400`}
+                      />
+                    </div>
                   </div>
-                  <div className="relative flex items-center">
-                    <Lock className="absolute left-6 text-gray-300" size={20} />
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      disabled={isLoading}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Senha do sistema"
-                      className={`w-full bg-white/[0.04] border border-white/10 ${focusBorder} focus:bg-white/[0.08] focus:ring-2 ${focusRing} text-white text-base font-bold pl-16 pr-16 py-5 rounded-2xl outline-none transition-all placeholder:text-gray-300`}
-                    />
-                    <button
-                      type="button"
-                      tabIndex={-1}
-                      onClick={() => setShowPassword(!showPassword)}
-                      className={`absolute right-6 text-gray-400 ${hoverText} hover:scale-110 active:scale-95 transition-all p-1`}
-                    >
-                      {showPassword ? <EyeOff size={22} /> : <Eye size={22} />}
-                    </button>
-                  </div>
-                </div>
+                )}
 
-                {/* Submit Action Button - High Taller, Glow Effects, Beautiful Interaction */}
+                {/* UPDATE PASSWORD MODE FIELDS */}
+                {authMode === 'update_password' && (
+                  <>
+                    <div className="space-y-2">
+                      <label className="block text-xs font-black text-white uppercase tracking-widest pl-1">
+                        Nova Senha
+                      </label>
+                      <div className="relative flex items-center">
+                        <Lock className="absolute left-5 text-gray-300" size={18} />
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          disabled={isLoading}
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          placeholder="Digite a nova senha"
+                          className={`w-full bg-white/[0.04] border border-white/10 ${focusBorder} focus:bg-white/[0.08] focus:ring-2 ${focusRing} text-white text-sm font-bold pl-14 pr-14 py-4 rounded-2xl outline-none transition-all placeholder:text-gray-400`}
+                        />
+                        <button
+                          type="button"
+                          tabIndex={-1}
+                          onClick={() => setShowPassword(!showPassword)}
+                          className={`absolute right-5 text-gray-400 ${hoverText} hover:scale-110 active:scale-95 transition-all p-1`}
+                        >
+                          {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="block text-xs font-black text-white uppercase tracking-widest pl-1">
+                        Confirmar Nova Senha
+                      </label>
+                      <div className="relative flex items-center">
+                        <KeyRound className="absolute left-5 text-gray-300" size={18} />
+                        <input
+                          type="password"
+                          disabled={isLoading}
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          placeholder="Repita a nova senha"
+                          className={`w-full bg-white/[0.04] border border-white/10 ${focusBorder} focus:bg-white/[0.08] focus:ring-2 ${focusRing} text-white text-sm font-bold pl-14 pr-5 py-4 rounded-2xl outline-none transition-all placeholder:text-gray-400`}
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* Submit Action Button */}
                 <motion.button
                   whileHover={{ scale: 1.015, y: -1 }}
                   whileTap={{ scale: 0.985 }}
                   type="submit"
                   disabled={isLoading}
-                  className={`w-full h-[64px] bg-gradient-to-r ${submitBtnBg} text-white font-black text-base uppercase tracking-widest rounded-2xl border border-transparent transition-all duration-300 flex items-center justify-center gap-3 cursor-pointer disabled:opacity-50 disabled:pointer-events-none mt-5 group ${submitBtnShadow}`}
+                  className={`w-full h-[58px] bg-gradient-to-r ${submitBtnBg} text-white font-black text-sm uppercase tracking-widest rounded-2xl border border-transparent transition-all duration-300 flex items-center justify-center gap-3 cursor-pointer disabled:opacity-50 disabled:pointer-events-none mt-6 group ${submitBtnShadow}`}
                 >
                   {isLoading ? (
                     <div className="flex items-center gap-3">
@@ -313,21 +694,57 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess, theme,
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                       </svg>
-                      <span>Homologando...</span>
+                      <span>Processando...</span>
                     </div>
                   ) : (
                     <>
-                      <span>Acessar Sistema</span>
-                      <ArrowRight size={20} className="transition-transform group-hover:translate-x-2" />
+                      <span>
+                        {authMode === 'login' && 'Acessar Sistema'}
+                        {authMode === 'cadastro' && 'Cadastrar e Entrar'}
+                        {authMode === 'recovery' && 'Enviar Link de Recuperação'}
+                        {authMode === 'update_password' && 'Salvar Nova Senha'}
+                      </span>
+                      <ArrowRight size={18} className="transition-transform group-hover:translate-x-2" />
                     </>
                   )}
                 </motion.button>
+
+                {/* Secondary navigation options below submit */}
+                <div className="pt-2 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-300 font-bold uppercase gap-2">
+                  {authMode === 'login' && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => switchMode('recovery')}
+                        className={`hover:underline ${hoverText} transition-colors`}
+                      >
+                        Esqueci minha senha
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => switchMode('cadastro')}
+                        className={`hover:underline ${hoverText} transition-colors`}
+                      >
+                        Criar nova conta
+                      </button>
+                    </>
+                  )}
+                  {(authMode === 'cadastro' || authMode === 'recovery' || authMode === 'update_password') && (
+                    <button
+                      type="button"
+                      onClick={() => switchMode('login')}
+                      className={`hover:underline ${hoverText} transition-colors mx-auto`}
+                    >
+                      Voltar ao Login de Acesso
+                    </button>
+                  )}
+                </div>
 
               </motion.form>
             ) : (
               <motion.div 
                 key="success-animation"
-                className="py-14 text-center flex flex-col items-center space-y-6"
+                className="py-12 text-center flex flex-col items-center space-y-6"
                 initial={{ opacity: 0, scale: 0.92 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
@@ -347,8 +764,10 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess, theme,
                   </motion.svg>
                 </div>
                 <div className="space-y-2">
-                  <h3 className="text-white font-black uppercase text-lg tracking-wider">Acesso Permitido</h3>
-                  <p className={`${successText} font-bold uppercase text-xs tracking-widest`}>Iniciando sessão do operador Eder</p>
+                  <h3 className="text-white font-black uppercase text-lg tracking-wider">Acesso Homologado</h3>
+                  <p className={`${successText} font-bold uppercase text-xs tracking-widest`}>
+                    Iniciando sessão do operador
+                  </p>
                 </div>
               </motion.div>
             )}

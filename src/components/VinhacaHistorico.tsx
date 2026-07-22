@@ -11,9 +11,12 @@ import {
   Filter,
   User,
   Activity,
-  AlertCircle
+  AlertCircle,
+  Loader2,
+  Database
 } from "lucide-react";
 import { registerVinhacaActivity, VinhacaHistoricEntry } from "../lib/vinhacaSync";
+import { getVinhacaHistoricoFromSupabase, deleteFromTable, isSupabaseReady } from "../lib/supabaseService";
 
 export const VinhacaHistorico: React.FC = () => {
   const [historyList, setHistoryList] = useState<VinhacaHistoricEntry[]>([]);
@@ -22,19 +25,49 @@ export const VinhacaHistorico: React.FC = () => {
   const [filterOrigem, setFilterOrigem] = useState<string>("TODOS");
   const [filterAcao, setFilterAcao] = useState<string>("TODOS");
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isSupabaseConnected, setIsSupabaseConnected] = useState<boolean>(false);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3000);
   };
 
-  const loadHistory = () => {
+  const loadHistory = async () => {
+    setIsLoading(true);
+    setErrorMessage(null);
+
+    // Try Supabase first if configured
+    if (isSupabaseReady()) {
+      setIsSupabaseConnected(true);
+      const res = await getVinhacaHistoricoFromSupabase();
+      if (!res.error && res.data && res.data.length > 0) {
+        const mapped: VinhacaHistoricEntry[] = res.data.map((row: any) => ({
+          id: row.id,
+          timestamp: row.timestamp,
+          origem: row.origem as any,
+          tipoAcao: row.tipo_acao as any,
+          caminhao: row.caminhao,
+          detalhes: row.detalhes,
+          usuario: row.user_email || 'luizricardocarvalhod@gmail.com'
+        }));
+        setHistoryList(mapped);
+        setIsLoading(false);
+        return;
+      } else if (res.error) {
+        setErrorMessage(`Aviso Supabase: ${res.error}. Exibindo dados locais.`);
+      }
+    } else {
+      setIsSupabaseConnected(false);
+    }
+
+    // Fallback to local storage
     try {
       const raw = localStorage.getItem("vinhaca_historico_db");
       if (raw) {
         setHistoryList(JSON.parse(raw));
       } else {
-        // Seed default history data if empty
         const initialSeed: VinhacaHistoricEntry[] = [
           {
             id: "V-SEED101",
@@ -75,7 +108,25 @@ export const VinhacaHistorico: React.FC = () => {
       }
     } catch (e) {
       console.error(e);
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const handleDeleteItem = async (id: string) => {
+    if (!confirm("Deseja realmente remover este registro do histórico?")) return;
+
+    if (isSupabaseReady()) {
+      const res = await deleteFromTable('vinhaca_historico', 'id', id);
+      if (res.error) {
+        showToast(`Erro ao excluir no Supabase: ${res.error}`);
+      }
+    }
+
+    const updated = historyList.filter(item => item.id !== id);
+    setHistoryList(updated);
+    localStorage.setItem("vinhaca_historico_db", JSON.stringify(updated));
+    showToast("Registro excluído com sucesso.");
   };
 
   useEffect(() => {

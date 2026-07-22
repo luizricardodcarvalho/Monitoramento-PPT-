@@ -436,9 +436,15 @@ DROP PROCEDURE public.apply_updated_at_triggers();
 -- 8. INDEXES FOR PERFORMANCE OPTIMIZATION
 -- -------------------------------------------------------------------------
 CREATE INDEX IF NOT EXISTS idx_fleet_prefixo ON public.fleet(prefixo);
+CREATE INDEX IF NOT EXISTS idx_fleet_unidade ON public.fleet(unidade);
+CREATE INDEX IF NOT EXISTS idx_fleet_status ON public.fleet(status);
 CREATE INDEX IF NOT EXISTS idx_frentes_frente ON public.frentes(frente);
+CREATE INDEX IF NOT EXISTS idx_frentes_unidade ON public.frentes(unidade);
 CREATE INDEX IF NOT EXISTS idx_logs_type ON public.logs(type);
+CREATE INDEX IF NOT EXISTS idx_logs_created_at ON public.logs(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_profiles_email ON public.profiles(email);
 CREATE INDEX IF NOT EXISTS idx_gestao_areas_banco_usina ON public.gestao_areas_banco(usina);
+CREATE INDEX IF NOT EXISTS idx_gestao_areas_banco_status ON public.gestao_areas_banco(status_area);
 CREATE INDEX IF NOT EXISTS idx_gestao_areas_boletim_usina ON public.gestao_areas_boletim(usina);
 CREATE INDEX IF NOT EXISTS idx_vinhaca_despacho_trucks_caminhao ON public.vinhaca_despacho_trucks(caminhao);
 CREATE INDEX IF NOT EXISTS idx_vinhaca_apontamentos_data ON public.vinhaca_apontamentos(data);
@@ -496,6 +502,9 @@ BEGIN
     DROP POLICY IF EXISTS "Profiles viewable by authenticated users" ON public.profiles;
     CREATE POLICY "Profiles viewable by authenticated users" ON public.profiles FOR SELECT TO authenticated USING (true);
     
+    DROP POLICY IF EXISTS "Users can insert their own profile" ON public.profiles;
+    CREATE POLICY "Users can insert their own profile" ON public.profiles FOR INSERT TO authenticated WITH CHECK (auth.uid() = id);
+
     DROP POLICY IF EXISTS "Users can update their own profile" ON public.profiles;
     CREATE POLICY "Users can update their own profile" ON public.profiles FOR UPDATE TO authenticated USING (auth.uid() = id);
 
